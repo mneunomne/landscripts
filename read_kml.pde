@@ -126,7 +126,6 @@ void calculateBarreiras() {
 }
 
 void calculateRios() {
-
   for (PVector[] coords : rios_latlng) {
     ArrayList<PVector> points = new ArrayList<PVector>();
     for (PVector coord : coords) {
