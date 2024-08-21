@@ -20,7 +20,7 @@ ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
 // top, bottom, right, left, 
 PVector translate = new PVector(0, 70);
 
-int margin = 20;
+int margin = 60;
 
 float[] bounds;
 float minLat;
@@ -126,6 +126,7 @@ void calculateBarreiras() {
 }
 
 void calculateRios() {
+
   for (PVector[] coords : rios_latlng) {
     ArrayList<PVector> points = new ArrayList<PVector>();
     for (PVector coord : coords) {
@@ -150,7 +151,7 @@ void calculateRios() {
   
   // set index for each line
   for (int i = 0; i < rios.size(); i++) {
-    rios.get(i).index = i;
+    rios.get(i).setIndex(i);
   }
 }
 
@@ -164,7 +165,7 @@ void calculateIntersections(ArrayList<Line> lines) {
   for (int i = 0; i < lines.size(); i++) {
     Line line1 = lines.get(i);
     Line line2;
-    float minDistance = 5;
+    float minDistance = 2;
     for (int j = 0; j < lines.size(); j++) {
       if (i == j) continue;
       line2 = lines.get(j);

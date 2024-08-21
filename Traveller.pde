@@ -6,7 +6,7 @@ class Traveller {
   // ArrayList<Intersection> intersections;
   // ArrayList<PVector> travelledPoints = new ArrayList<PVector>(); 
   
-  int currentLineIndex = 0;
+  int curLineIndex = 0;
   int currentPointIndex = 0;
 
   int direction = 1;
@@ -21,56 +21,104 @@ class Traveller {
 
   void step () {
 
-    Line line = lines.get(currentLineIndex);
-    Point point = line.getCurPoint(); 
-    point.visited = true;
+    Line curLine = lines.get(curLineIndex);
 
-    if (point.hasIntersection) {
-      println("Intersection reached");
-      Intersection intersection = point.getRandomIntersection();
-      Line otherLine = pathFinder.findBestPath(intersection);
-      if (otherLine == line) {
-        println("Stay on same line");
-      } else {
-        Point otherPoint = intersection.getOtherPoint(point);
-        //direction = pathFinder.direction;
-        int otherLineIndex = otherLine.index;
-        int otherPointIndex = otherPoint.index;
-        currentLineIndex = otherLineIndex;
-        otherLine.setCurIndex(otherPointIndex);
-        point = otherPoint;
-        line = otherLine;
-      }
+    // add to visitedLines
+    if (!visitedLines.contains(curLine)) {
+      visitedLines.add(curLine);
     }
 
-    if (point.getIsEndPoint()) {
+    Point curPoint = curLine.getCurPoint(); 
+    curPoint.visited = true;
+
+    if (curPoint.hasIntersection) {
+      curPoint = onIntersection(curLine, curPoint);
+      curLine = curPoint.parentLine;
+      curLine.setCurIndex(curPoint.index);
+      curLineIndex = curLine.index;
+      // random direction 
+      direction = random(1) > 0.5 ? 1 : -1;
+    }
+
+    if (curPoint.getIsEndPoint()) {
       println("End point reached");
       // invert direction
       direction = -1;
-    }
-
-    if (point.getIsStartPoint() && direction == -1) {
+    } else if (curPoint.getIsStartPoint() && direction == -1) {
       println("Start point reached");
       // invert direction
       direction = 1;
+    } else if (curLine.reachedEnd && !curLine.reachedStart) {
+      direction = -1;
+    } else if (curLine.reachedStart && !curLine.reachedEnd) {
+      direction = 1;
     }
 
-    line.step(direction);
+    curLine.step(direction);
+  }
+
+  Point onIntersection(Line curLine, Point curPoint) {
+    println("Intersection reached");
+
+    ArrayList <Intersection> intersections = curPoint.getIntersections();
+
+    //ArrayList<Line> otherLines = new ArrayList<Line>();
+    int maxConnectedLines = 0;
+    Line otherLine = null;
+    Intersection intersectionPath = null;
+    for (Intersection intersection : intersections) {
+      Line l = intersection.getOtherLine(curLine);
+      ArrayList<Line> connectedLines = filterNotVisitedLines(l.getOtherConnectedLines(l, intersections));
+      println("otherConnectedLines: " + connectedLines.size());
+      // uncheck all lines
+      for (Line line : lines) {
+        line.setIsChecked(false);
+      }
+      if (otherLine == null || connectedLines.size() > maxConnectedLines) {
+        maxConnectedLines = connectedLines.size();
+        otherLine = l;
+        intersectionPath = intersection;
+      }
+    }
+  
+    boolean changeLine = otherLine != null && otherLine != curLine;
+
+    if (maxConnectedLines == 0) {
+      changeLine = !otherLine.getIsVisited();
+    }
+
+    // change line
+    if (changeLine) {
+      return intersectionPath.getOtherPoint(curPoint);
+    } else {
+      return curPoint;
+    }
   }
 
   void display () {
-    Point point = lines.get(currentLineIndex).getCurPoint();
+    Point curPoint = lines.get(curLineIndex).getCurPoint();
     fill(255);
-    if (point.getIsEndPoint()) {
+    if (curPoint.getIsEndPoint()) {
       fill(0, 255, 0);
     }
-    if (point.getIsStartPoint()) {
+    if (curPoint.getIsStartPoint()) {
       fill(0, 0, 255);
     }
-    if (point.hasIntersection) {
+    if (curPoint.hasIntersection) {
       fill(255, 0, 0);
     }
-    PVector pos = point.pos;
+    PVector pos = curPoint.pos;
     ellipse(pos.x, pos.y, 10, 10);
+  }
+
+
+  ArrayList<Line> filterNotVisitedLines (ArrayList<Line> lines) {
+    ArrayList<Line> notVisitedLines = new ArrayList<Line>();
+    for (Line line : lines) {
+      if (!line.getIsVisited()) {
+        notVisitedLines.add(line);
+      }
+    }
+    return notVisitedLines;
   }
 }

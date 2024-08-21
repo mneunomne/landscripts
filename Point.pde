@@ -8,7 +8,9 @@ class Point {
   int index;
   ArrayList<Intersection> intersections = new ArrayList<Intersection>();
 
-  Point(int _x, int _y, int _index, boolean _endPoint) {
+  Line parentLine;
+
+  Point(int _x, int _y, int _index, boolean _endPoint, Line _parentLine) {
     x = _x;
     y = _y;
     pos = new PVector(x, y);
@@ -19,6 +21,7 @@ class Point {
     if (_endPoint) {
       endPoint = true;
     }
+    this.parentLine = _parentLine;
   }
 
   void display() {
@@ -61,6 +64,43 @@ class Point {
 
   Intersection getRandomIntersection() {
     return intersections.get((int)random(intersections.size()));
+  }
+
+  // get Intersection with where the other line is not visited OR has most unvisited Lines connected
+  Intersection getBestIntersection(Line currentLine) {
+    Intersection bestIntersection = null;
+    int maxUnvisitedPoints = 0;
+    for (Intersection intersection : intersections) {
+      Line line1 = intersection.l1;
+      Line line2 = intersection.l2;
+      int unvisitedPointsL1 = 0;
+      if (!line1.reachedStart) {
+        unvisitedPointsL1++;
+      }
+      if (!line1.reachedEnd) {
+        unvisitedPointsL1++;
+      }
+      int unvisitedPointsL2 = 0;
+      if (!line2.reachedStart) {
+        unvisitedPointsL2++;
+      }
+      if (!line2.reachedEnd) {
+        unvisitedPointsL2++;
+      }
+      if (unvisitedPointsL1 > unvisitedPointsL2 && unvisitedPointsL1 > maxUnvisitedPoints) {
+        maxUnvisitedPoints = unvisitedPointsL1;
+        bestIntersection = intersection;
+      } else if (unvisitedPointsL2 > unvisitedPointsL1 && unvisitedPointsL2 > maxUnvisitedPoints) {
+        maxUnvisitedPoints = unvisitedPointsL2;
+        bestIntersection = intersection;
+      }
+    }
+    if (bestIntersection != null) {
+      return bestIntersection;
+    } else {
+      // return random intersection
+      return getRandomIntersection();
+    }
   }
 
   ArrayList<Intersection> getIntersections() {
