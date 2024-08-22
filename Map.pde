@@ -15,8 +15,6 @@ class Map {
   // top, bottom, right, left, 
   PVector translate = new PVector(0, 70);
 
-  int margin = 60;
-
   float[] bounds;
   float minLat;
   float maxLat;
@@ -96,7 +94,7 @@ class Map {
       for (PVector coord : coords) {
         float x = map(coord.x, minLat, maxLat, translate.x, width + translate.x);
         float y = map(coord.y, minLng, maxLng, height + translate.y, translate.y);
-        if (x > margin && x < width - margin && y > margin && y < height - margin) {
+        if (x > CANVAS_MARGIN && x < width - CANVAS_MARGIN && y > CANVAS_MARGIN && y < height - CANVAS_MARGIN) {
           points.add(new PVector(x, y));
         }
       }
@@ -129,7 +127,7 @@ class Map {
     for (int i = 0; i < lines.size(); i++) {
       Line line1 = lines.get(i);
       Line line2;
-      float minDistance = 2;
+      float minDistance = 2.5;
       for (int j = 0; j < lines.size(); j++) {
         if (i == j) continue;
         line2 = lines.get(j);

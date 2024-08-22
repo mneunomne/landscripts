@@ -9,14 +9,14 @@ class MachineController {
   
   PGraphics machineCanvas;
   
-  boolean noMachine = false;
+  boolean noMachine = true;
   
-  int microdelay = default_microdelay;
+  int microdelay = MICRODELAY_DEFAULT;
   
   MachineController(PApplet parent, boolean _noMachine) {
     // if no machine, don't connect to serial
     noMachine = _noMachine;
-    machineCanvas = createGraphics(1000, 1000);
+    machineCanvas = createGraphics(width, height);
     if (noMachine) return; 
     // Connect to Serial
     print("[MachineController] SerialList: ");
@@ -72,15 +72,52 @@ class MachineController {
     machineCanvas.fill(0, 255, 0, 50);
     machineCanvas.ellipse(nextPos.x, nextPos.y, 50, 50);
     machineCanvas.stroke(255, 0, 0);
-    machineCanvas.line(currentPos.x-10, currentPos.y, currentPos.x+10, currentPos.y);
-    machineCanvas.line(currentPos.x, currentPos.y-10, currentPos.x, currentPos.y+10);
+    machineCanvas.line(currentPos.x-8, currentPos.y, currentPos.x+8, currentPos.y);
+    machineCanvas.line(currentPos.x, currentPos.y-8, currentPos.x, currentPos.y+8);
     machineCanvas.endDraw();
 
     // draw text current position // with line break
-    fill(255);
-    text("Current Position: " + currentPos.x + "\n" + currentPos.y, 10, 50);
+    fill(0);
+    text("Current Position: " + currentPos.x + "\n" + currentPos.y, height - 40, 50);
    
-    image(machineCanvas, canvas_margin, canvas_margin, width-(canvas_margin*2), height-(canvas_margin*2));
+    image(machineCanvas, CANVAS_MARGIN, CANVAS_MARGIN, width-(CANVAS_MARGIN*2), height-(CANVAS_MARGIN*2));
+  }
+
+  void listenToPort () {
+    if (noMachine) return;
+    // read from serial port
+    if (port.available() > 0) {
+      String inBuffer = port.readStringUntil('\n');
+      if (inBuffer != null) {
+        println("[MachineController] Received: " + inBuffer);
+        // if message is 'e' means the movement is over
+        if (inBuffer.contains("end")) {
+          //String index = inBuffer.substring(3, inBuffer.length()-1);
+          //int point_index = int(index);
+          //println("END: " + point_index);
+
+          if (machine_state == MOVING_TO) {
+            machine_state = MOVING_TO_ENDED;
+          } else if (machine_state == DRAWING) {
+            machine_state = DRAWING_TO_ENDED;
+          }
+          currentPos = nextPos;
+          
+          if (inBuffer.contains("lim")) {
+            if (inBuffer.contains("end_limit_x")) {
+              println("end_limit_x");
+              currentPos.x = 0;
+            }
+            if (inBuffer.contains("end_limix_y")) {
+              println("end_limit_y");
+              currentPos.y = 0;
+            }
+            storePosition(currentPos.x, currentPos.y);
+            machine_state = MACHINE_IDLE;
+          }
+        }
+      }
+    }
   }
   
   void moveHomeX() {
@@ -111,7 +148,7 @@ class MachineController {
     sendMovement(diff_x, diff_y, 1, microdelay, 0);
   }
   
-  boolean sendLine(int x, int y, int point_index) {
+  boolean sendLine(int x, int y) {
     machine_state = DRAWING;
     nextPos = new PVector(x, y);
     println("pos: " + x + " " + currentPos.x + " " + y + " " + currentPos.y);
@@ -126,7 +163,7 @@ class MachineController {
     int delay = microdelay; //+ int(random(-100, 100));
     
     // send movement data
-    sendMovement(diff_x, diff_y, 2, delay, point_index);
+    sendMovement(diff_x, diff_y, 2, delay, 0);
     return true;
   }
   

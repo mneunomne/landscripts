@@ -16,7 +16,7 @@ class Traveller {
     lines = _lines;
   }
 
-  void step () {
+  PVector step () {
 
     Line curLine = lines.get(curLineIndex);
 
@@ -50,8 +50,8 @@ class Traveller {
     } else if (curLine.reachedStart && !curLine.reachedEnd) {
       direction = 1;
     }
-
-    curLine.step(direction);
+    Point nextPoint = curLine.step(direction);
+    return nextPoint.pos;
   }
 
   Point onIntersection(Line curLine, Point curPoint) {
@@ -117,4 +117,11 @@ class Traveller {
     }
     return notVisitedLines;
   }
+}
+
+void set_send_lines() {
+  //state = SEND_LINES;
+  //traveller.curLineIndex = 0;
+  //traveller.currentPointIndex = 0;
+  goToLine();
 }

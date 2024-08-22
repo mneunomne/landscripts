@@ -27,7 +27,7 @@ class Line {
     curIndex = 0;
   }
   
-  void step(int direction) {
+  Point step(int direction) {
     curIndex += direction;
     curPoint = points.get(curIndex);
     curPoint.visited = true;
@@ -37,6 +37,7 @@ class Line {
     if (curIndex == 0) {
       reachedStart = true;
     }
+    return curPoint;
   }
   
   void setCurIndex(int _curIndex) {
