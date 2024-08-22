@@ -2,9 +2,6 @@ class Traveller {
   ArrayList<Line> lines; 
 
   PathFinder pathFinder = new PathFinder();
-
-  // ArrayList<Intersection> intersections;
-  // ArrayList<PVector> travelledPoints = new ArrayList<PVector>(); 
   
   int curLineIndex = 0;
   int currentPointIndex = 0;
@@ -110,7 +107,6 @@ class Traveller {
     PVector pos = curPoint.pos;
     ellipse(pos.x, pos.y, 10, 10);
   }
-
 
   ArrayList<Line> filterNotVisitedLines (ArrayList<Line> lines) {
     ArrayList<Line> notVisitedLines = new ArrayList<Line>();
