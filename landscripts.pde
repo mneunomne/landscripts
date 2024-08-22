@@ -18,7 +18,6 @@ void setup() {
   traveller = new Traveller(map.rios);
 }
 
-
 void draw() {
   background(255);
   

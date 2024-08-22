@@ -153,10 +153,21 @@ class Map {
           Point p2 = closestIntersection.p2;
           Line l1 = closestIntersection.l1;
           Line l2 = closestIntersection.l2;
-          p1.addIntersection(closestIntersection);
-          p2.addIntersection(closestIntersection);
-          l1.addIntersection(closestIntersection);
-          l2.addIntersection(closestIntersection);
+
+          // check if line l2 already has intersection with l1
+          boolean hasIntersection = false;
+          for (Intersection intersection : l2.intersections) {
+            if (l2 == intersection.l1 && l1 == intersection.l2) {
+              hasIntersection = true;
+              break;
+            }
+          }
+          if (!hasIntersection) {
+            p1.addIntersection(closestIntersection);
+            p2.addIntersection(closestIntersection);
+            l1.addIntersection(closestIntersection);
+            l2.addIntersection(closestIntersection);
+          }
         }
       }
     }
