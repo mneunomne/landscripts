@@ -118,10 +118,3 @@ class Traveller {
     return notVisitedLines;
   }
 }
-
-void set_send_lines() {
-  //state = SEND_LINES;
-  //traveller.curLineIndex = 0;
-  //traveller.currentPointIndex = 0;
-  goToLine();
-}

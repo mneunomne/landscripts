@@ -151,7 +151,7 @@ class MachineController {
   boolean sendLine(int x, int y) {
     machine_state = DRAWING;
     nextPos = new PVector(x, y);
-    println("pos: " + x + " " + currentPos.x + " " + y + " " + currentPos.y);
+    // println("pos: " + x + " " + currentPos.x + " " + y + " " + currentPos.y);
     int diff_x = int(x - currentPos.x);
     int diff_y = int(y - currentPos.y);
     if (diff_x == 0 && diff_y == 0) {

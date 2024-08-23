@@ -53,16 +53,12 @@ int machine_state = 0;
 
 int lastWaitTime = 0;
 
-boolean noMachine = false;
+boolean noMachine = true;
 
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
   size(800, 800);
-  
-  cp5 = new ControlP5(this);
-  gui = new Gui(cp5);
-  gui.init();
   
   machineController = new MachineController(this, noMachine);
   
@@ -71,6 +67,9 @@ void setup() {
   
   traveller = new Traveller(map.rios);
 
+  cp5 = new ControlP5(this);
+  gui = new Gui(cp5);
+  gui.init();
 }
 
 void draw() {
@@ -139,4 +138,14 @@ void keyPressed() {
       machineController.currentPos.x += 10;
     }
   }
+}
+
+/* GUI BUTTON EVENTS */
+
+void set_send_lines(int val) {
+  //state = SEND_LINES;
+  //traveller.curLineIndex = 0;
+  //traveller.currentPointIndex = 0;
+  println("goToLine", val);
+  goToLine();
 }
