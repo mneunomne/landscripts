@@ -52,10 +52,9 @@ class Line {
     beginShape();
     for (Point point : points) {
       vertex(point.x, point.y);
-      point.display();
+      //point.display();
     }
     // open shape, no fill inside
-    stroke(0);
     noFill();
     endShape();
   }

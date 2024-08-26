@@ -7,7 +7,7 @@ class Map {
   ArrayList<PVector[]> barreiras_latlng = new ArrayList<PVector[]>();
   ArrayList<PVector[]> rios_latlng = new ArrayList<PVector[]>();
 
-  ArrayList<Shape> barreiras = new ArrayList<Shape>();
+  ArrayList<Line> barreiras = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
 
   ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
@@ -59,7 +59,7 @@ class Map {
   }
 
   void calculate() {
-    //calculateBarreiras();
+    calculateBarreiras();
     calculateRios();
     calculateIntersections(rios);
   }
@@ -73,17 +73,15 @@ class Map {
       for (PVector coord : coords) {
         float x = map(coord.x, minLat, maxLat, translate.x, width + translate.x);
         float y = map(coord.y, minLng, maxLng, height + translate.y, translate.y);
-        vertex(x, y);
         // if point is in bounds, add to points
         if (x > translate.x && x < width + translate.x && y > translate.y && y < height + translate.y) {
           points.add(new PVector(x, y));
         }
       }
       if (points.size() > 0) {
-        Shape s = new Shape(points);
-        barreiras.add(s);
+        Line l = new Line(points);
+        barreiras.add(l);
       }
-      stroke(244, 164, 96);
       endShape(CLOSE);
     }
   }
@@ -118,8 +116,19 @@ class Map {
   }
 
   void drawRios() {
+    // blue color
+    stroke(0, 0, 255);
     for (Line rio : rios) {
       rio.display();
+    }
+  }
+
+  void drawBarreiras() {
+    
+    // clay color stroke rgb: 244, 164, 96
+    stroke(244, 164, 96);
+    for (Line barreira : barreiras) {
+      barreira.display();
     }
   }
 

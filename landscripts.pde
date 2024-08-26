@@ -24,6 +24,8 @@ static final int WAITTIME_DEFAULT   = 2000;
 static final int MICRODELAY_DEFAULT = 200;
 static final int CANVAS_MARGIN      = 0;
 
+static final boolean EXPORT_SVG     = false;
+
 /* states */
 static final int IDLE               = 0;
 static final int DRAW_MODE          = 1;
@@ -70,17 +72,34 @@ void setup() {
   cp5 = new ControlP5(this);
   gui = new Gui(cp5);
   gui.init();
+
+
+
+  if (EXPORT_SVG){
+    noLoop();
+    // export svg 
+    beginRecord(SVG, "rios.svg");
+      background(0);
+      map.drawRios();
+    endRecord();
+    beginRecord(SVG, "barreiras.svg");
+      background(0);
+      map.drawBarreiras();
+    endRecord();
+  } 
 }
 
 void draw() {
-  background(200);
+  background(0);
   
   map.drawRios();
-  
-  traveller.display();
 
-  machineController.update();
-  machineController.display();
+  map.drawBarreiras();
+  
+  //traveller.display();
+
+  //machineController.update();
+  //machineController.display();
 }
 
 void sendDrawLine() {
