@@ -96,10 +96,10 @@ void draw() {
 
   map.drawBarreiras();
   
-  //traveller.display();
+  traveller.display();
 
-  //machineController.update();
-  //machineController.display();
+  machineController.update();
+  machineController.display();
 }
 
 void sendDrawLine() {
