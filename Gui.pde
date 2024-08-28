@@ -16,32 +16,29 @@ class Gui {
     int h = 19;
     int x = width - w - 20;
 
-    cp5.addButton("set_idle")
-      .setValue(0)
+    cp5.addBang("set_idle")
       .setPosition(x, 20)
       .setSize(w, h)
       .setCaptionLabel("Set Idle")
       .getCaptionLabel().align(ControlP5.LEFT, ControlP5.CENTER)
       ;
 
-    cp5.addButton("set_draw_mode")
-      .setValue(0)
+    cp5.addBang("set_draw_mode")
       .setPosition(x, 40)
       .setSize(w, h)
       .setCaptionLabel("Set Draw Mode")
       .getCaptionLabel().align(ControlP5.LEFT, ControlP5.CENTER)
       ;
 
-    cp5.addButton("set_send_lines")
-      .setValue(0)
+    cp5.addBang("set_send_lines")
       .setPosition(x, 60)
       .setSize(w, h)
       .setCaptionLabel("Set Send Lines")
+			.setTriggerEvent(Bang.RELEASE)
       .getCaptionLabel().align(ControlP5.LEFT, ControlP5.CENTER)
       ;
 
-    cp5.addButton("set_wait_draw_next")
-      .setValue(0)
+    cp5.addBang("set_wait_draw_next")
       .setPosition(x, 80)
       .setSize(w, h)
       .setCaptionLabel("Set Wait Draw Next")

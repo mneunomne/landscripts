@@ -24,6 +24,10 @@ GCodeParser GCode = GCodeParser();
 int minDelay = 2;
 int maxDelayDefault = 200;
 
+
+boolean reachedXLimit = false;
+boolean reachedYLimit = false;
+
 char c;
 
 char buffer[14];
@@ -33,7 +37,7 @@ char buffer[14];
 long curX = 0L;
 long curY = 0L;
 
-long steps_per_pixel = 60; 
+int steps_per_pixel = 68; 
 
 void setup() {
   Serial.begin(115200);
@@ -59,9 +63,15 @@ void loop() {
 bool checkLimitX(){
   int limitSwitchX = digitalRead(limitX);
   if (limitSwitchX == LOW) {
-    Serial.println("end_limit_x");
+    if (!reachedXLimit) {
+      Serial.println("end_limit_x");
+      Serial.println(String(curX - 1000L));
+      reachedXLimit = true;
+      curX = 0L;
+    }
     return true;
   } else {
+    reachedXLimit = false;
     return false;
   }
 }
@@ -69,9 +79,15 @@ bool checkLimitX(){
 bool checkLimitY() {
   int limitSwitchY = digitalRead(limitY);
   if (limitSwitchY == LOW) {
-    Serial.println("end_limix_y");
+    if (!reachedYLimit) {
+      Serial.println("end_limit_y");
+      Serial.println(String(curY + 1000L));
+      reachedYLimit = true;
+      curY = 0L;
+    }
     return true;
   } else {
+    reachedYLimit = false;
     return false;
   }
 }
@@ -96,7 +112,6 @@ void listenToPort() {
           // buffer
           char buffer[14];
           int out = sprintf(buffer, "end_%d", index);
-          
           move(posX, posY, microdelay);
           // repond to the sender the current position
           Serial.println(buffer);
@@ -106,18 +121,26 @@ void listenToPort() {
   }
 }
 
+void goHome () {
+  moveX(100000L, 1, 200, false);
+  moveY(100000L, -1, 200, false);
+}
+
 
 void start () {
-  Serial.println("r");
   delay(100);
 
   digitalWrite(ENA_PIN,LOW); // enable motor HIGH -> DISABLE
   digitalWrite(ENA_PIN,LOW); // enable motor HIGH -> DISABLE
   // initial movement 
-  moveX(500, 1, 500, false);
-  moveY(500, 1, 500, false);
-  moveX(500, -1, 500, false);
-  moveY(500, -1, 500, false);
+  moveX(500L, 1, 500, false);
+  moveY(500L, -1, 500, false);
+  moveX(500L, -1, 500, false);
+  moveY(500L, 1, 500, false);
+
+  goHome();
+
+  Serial.println("r");
 }
 
 // Cubic interpolation function
@@ -157,6 +180,11 @@ void move(long diffX, long diffY, int maxDelay) {
   // Calculate the total steps for each axis
   long totalStepsX = labs(diffX * steps_per_pixel);
   long totalStepsY = labs(diffY * steps_per_pixel);
+
+  Serial.print("totalStepsX: ");
+  Serial.print(String(totalStepsX));
+  Serial.print(" Y: ");
+  Serial.println(String(totalStepsY));
 
   if (totalStepsX > 0 && totalStepsY == 0) {
     moveX(totalStepsX, dirX, maxDelay, false);
@@ -229,20 +257,20 @@ void move(long diffX, long diffY, int maxDelay) {
     stepY += stepSizeY;
 
     if (stepX >= 1.0) {
-      moveX(1, dirX, curDelay, false);
+      moveX(1L, dirX, curDelay, false);
       curX += 1*dirX;
       stepX -= 1.0;
     }
 
     if (stepY >= 1.0) {
-      moveY(1, dirY, curDelay, false);
+      moveY(1L, dirY, curDelay, false);
       curY += 1*dirY;
       stepY -= 1.0;
     }
   }
 }
 
-void moveX (int steps, int dir, int microdelay, bool ignoreLimit) {
+void moveX (long steps, int dir, int microdelay, bool ignoreLimit) {
   if (dir > 0) {
       digitalWrite(DIR_PIN_X,LOW); // enable motor HIGH -> DISABLE
   } else {
@@ -250,9 +278,10 @@ void moveX (int steps, int dir, int microdelay, bool ignoreLimit) {
   }
   for (int i = 0; i < steps; i++) {
     if (checkLimitX() && !ignoreLimit) {
-      moveX(1000, -dir, 500, true);
+      moveX(1000L, -dir, 500, true);
       return;
     }
+    curX += 1 * dir;
     digitalWrite(STEP_PIN_X,HIGH);
     delayMicroseconds(1);
     digitalWrite(STEP_PIN_X,LOW);
@@ -261,7 +290,7 @@ void moveX (int steps, int dir, int microdelay, bool ignoreLimit) {
   
 }
 
-void moveY (int steps, int dir, int microdelay, bool ignoreLimit) {
+void moveY (long steps, int dir, int microdelay, bool ignoreLimit) {
   if (dir > 0) {
       digitalWrite(DIR_PIN_Y,LOW); // enable motor HIGH -> DISABLE
   } else {
@@ -269,9 +298,10 @@ void moveY (int steps, int dir, int microdelay, bool ignoreLimit) {
   }
   for (int i = 0; i < steps; i++) {
     if (checkLimitY() && !ignoreLimit) {
-      moveY(1000, -dir, 500, true);
+      moveY(1000L, -dir, 500, true);
       return;
     }
+    curY += 1 * dir;
     digitalWrite(STEP_PIN_Y,HIGH);
     delayMicroseconds(1);
     digitalWrite(STEP_PIN_Y,LOW);

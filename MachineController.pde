@@ -1,7 +1,7 @@
 class MachineController {
   
   Serial port;  // Create object from Serial class
-  int portIndex = 2;
+  int portIndex = 0;
   
   PVector currentPos = new PVector(0, 0);
   
@@ -96,19 +96,24 @@ class MachineController {
           //int point_index = int(index);
           //println("END: " + point_index);
 
+					println("machine_state", machine_state);
+
           if (machine_state == MOVING_TO) {
             machine_state = MOVING_TO_ENDED;
           } else if (machine_state == DRAWING) {
             machine_state = DRAWING_TO_ENDED;
           }
+
+					println("machine_state", machine_state);
+					
           currentPos = nextPos;
           
-          if (inBuffer.contains("lim")) {
+          if (inBuffer.contains("limit")) {
             if (inBuffer.contains("end_limit_x")) {
               println("end_limit_x");
               currentPos.x = 0;
             }
-            if (inBuffer.contains("end_limix_y")) {
+            if (inBuffer.contains("end_limit_y")) {
               println("end_limit_y");
               currentPos.y = 0;
             }
@@ -122,12 +127,12 @@ class MachineController {
   
   void moveHomeX() {
     if (noMachine) return;
-    machineController.move(800, 0); // up
+    machineController.move(width, 0); // up
   }
   
   void moveHomeY() {
     if (noMachine) return;
-    machineController.move(0, -800); // up
+    machineController.move(0, -height); // up
   }
   
   void move(int x, int y) {

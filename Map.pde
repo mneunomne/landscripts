@@ -118,6 +118,7 @@ class Map {
   void drawRios() {
     // blue color
     stroke(0, 0, 255);
+		noFill();
     for (Line rio : rios) {
       rio.display();
     }
@@ -127,6 +128,7 @@ class Map {
     
     // clay color stroke rgb: 244, 164, 96
     stroke(244, 164, 96);
+		fill(244, 164, 96, 100);
     for (Line barreira : barreiras) {
       barreira.display();
     }
@@ -220,4 +222,21 @@ class Map {
     }
     return coords;
   }
+
+	ArrayList<Point> getPointsFromPos (PVector pos) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		for (Line rio : rios) {
+			for (Point point : rio.points) {
+				if (point.x == pos.x && point.y == pos.y) {
+					points.add(point);
+				}
+			}
+		}
+		return points;
+	}
+
+	void display() {
+		drawBarreiras();
+		drawRios();
+	}
 }

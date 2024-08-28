@@ -30,16 +30,14 @@ class Point {
   }
 
   void display() {
-    noStroke();
-    fill(255);
-    if (visited) {
-      fill(255, 0, 0);
-    }
+		pushStyle();
     if (endPoint) {
       fill(0, 255, 0);
+			ellipse(pos.x, pos.y, 5, 5);
     }
     if (startPoint) {
       fill(0, 0, 255);
+			ellipse(pos.x, pos.y, 5, 5);
     }
     if (hasIntersection) {
       // draw cross
@@ -47,7 +45,8 @@ class Point {
       line(pos.x - 5, pos.y - 5, pos.x + 5, pos.y + 5);
       line(pos.x + 5, pos.y - 5, pos.x - 5, pos.y + 5);
     }
-    ellipse(pos.x, pos.y, 3, 3);
+    // ellipse(pos.x, pos.y, 3, 3);
+		popStyle();
   }
 
   void addIntersection(Intersection intersection) {

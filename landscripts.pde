@@ -26,6 +26,8 @@ static final int CANVAS_MARGIN      = 0;
 
 static final boolean EXPORT_SVG     = false;
 static final boolean EXPORT_OMS     = false;
+static final boolean SAVE_FRAME     = false;
+static final boolean NO_MACHINE 		= false;
 
 /* states */
 static final int IDLE               = 0;
@@ -56,14 +58,15 @@ int machine_state = 0;
 
 int lastWaitTime = 0;
 
-boolean noMachine = true;
+
+int saveFrameCount = 0;
 
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
-  size(800, 800);
+  size(1000, 1000);
   
-  machineController = new MachineController(this, noMachine);
+  machineController = new MachineController(this, NO_MACHINE);
   
   map = new Map("rios.kml", "barreiras.kml");
   map.calculate();
@@ -103,17 +106,30 @@ void draw() {
 
   machineController.update();
   machineController.display();
+
+	if (SAVE_FRAME) {
+		if (frameCount % 2 == 0) {
+			// save frame using saveFrameCount as name with 4 digits
+			saveFrame("data/frames/frame_" + nf(saveFrameCount, 4) + ".png");
+			saveFrameCount++;
+		}
+	}
 }
 
 void sendDrawLine() {
+	println("sendDrawLine");
   PVector nextPos = traveller.step();
   int x = int(nextPos.x);
   int y = int(nextPos.y);
   boolean valid = machineController.sendLine(x, y);
+	if (!valid) {
+		sendDrawLine();
+	}
   //machineController.moveTo(x, y); // move to the first point of the first line
 }
 
 void goToLine () {
+	println("goToLine");
   Line l = map.rios.get(0);
   Point p = l.getPoint(0);
   machineController.moveTo(p.x, p.y);
@@ -166,7 +182,9 @@ void set_send_lines(int val) {
   //traveller.curLineIndex = 0;
   //traveller.currentPointIndex = 0;
   println("goToLine", val);
-  goToLine();
+	if (val == 1) {
+  	goToLine();
+	}
 }
 
 // export data as .osm

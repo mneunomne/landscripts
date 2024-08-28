@@ -52,13 +52,28 @@ class Line {
   }
   
   void display() {
+		// for visited points
+		pushStyle();
     beginShape();
     for (Point point : points) {
-      vertex(point.x, point.y);
-      //point.display();
+      if (point.visited) {
+				vertex(point.x, point.y);
+			}
     }
     // open shape, no fill inside
-    noFill();
+		strokeWeight(3);
+		stroke(244, 164, 96);
+    endShape();
+		popStyle();
+		
+		
+		beginShape();
+    for (Point point : points) {
+      vertex(point.x, point.y);
+      point.display();
+    }
+    // open shape, no fill inside
+		//stroke(0, 0, 255);
     endShape();
   }
   

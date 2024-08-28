@@ -43,6 +43,10 @@ class Traveller {
       direction = 1;
     }
     curPos = path.get(curIndex);
+		ArrayList<Point> curPoints = map.getPointsFromPos(curPos);
+		for (Point point : curPoints) {
+			point.visited = true;
+		}
     return curPos;
   }
 
