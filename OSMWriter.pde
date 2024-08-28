@@ -36,6 +36,8 @@ class OSMWriter {
           node.setLong("id", id);
           node.setFloat("lat", coord.x);
           node.setFloat("lon", coord.y);
+          node.setInt("x", point.x);
+          node.setInt("y", point.y);
           nodeMap.put(coord, id);
         }
         // if point is an intersection, add the latlng of the intersection
@@ -48,6 +50,8 @@ class OSMWriter {
               node.setLong("id", id);
               node.setFloat("lat", coord.x);
               node.setFloat("lon", coord.y);
+              node.setInt("x", intersection.x);
+              node.setInt("y", intersection.y);
               // add interssection tag
               XML tag = node.addChild("tag");
               tag.setString("k", "intersection");

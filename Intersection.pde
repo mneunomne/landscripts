@@ -3,8 +3,8 @@ class Intersection {
   Point p2;
   Line l1;
   Line l2;
-  PVector pos;
-
+  int x;
+  int y;
   float lat;
   float lng;
 
@@ -13,6 +13,8 @@ class Intersection {
     this.p2 = p2;
     this.l1 = l1;
     this.l2 = l2;
+    this.x = int((p1.x + p2.x) / 2);
+    this.y = int((p1.y + p2.y) / 2);
     this.lat = (p1.lat + p2.lat) / 2;
     this.lng = (p1.lng + p2.lng) / 2;
   }

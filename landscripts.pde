@@ -25,7 +25,7 @@ static final int MICRODELAY_DEFAULT = 200;
 static final int CANVAS_MARGIN      = 0;
 
 static final boolean EXPORT_SVG     = false;
-static final boolean EXPORT_OMS     = true;
+static final boolean EXPORT_OMS     = false;
 
 /* states */
 static final int IDLE               = 0;
@@ -68,22 +68,20 @@ void setup() {
   map = new Map("rios.kml", "barreiras.kml");
   map.calculate();
   
-  traveller = new Traveller(map.rios);
+  traveller = new Traveller("data/path.csv");
 
   cp5 = new ControlP5(this);
   gui = new Gui(cp5);
   gui.init();
 
-
-
   if (EXPORT_SVG){
     noLoop();
     // export svg 
-    beginRecord(SVG, "rios.svg");
+    beginRecord(SVG, "data/rios.svg");
       background(0);
       map.drawRios();
     endRecord();
-    beginRecord(SVG, "barreiras.svg");
+    beginRecord(SVG, "data/barreiras.svg");
       background(0);
       map.drawBarreiras();
     endRecord();
@@ -112,9 +110,6 @@ void sendDrawLine() {
   int x = int(nextPos.x);
   int y = int(nextPos.y);
   boolean valid = machineController.sendLine(x, y);
-  if (!valid) {
-    sendDrawLine();
-  }
   //machineController.moveTo(x, y); // move to the first point of the first line
 }
 
@@ -177,5 +172,5 @@ void set_send_lines(int val) {
 // export data as .osm
 void exportData () {
   OSMWriter osmWritter = new OSMWriter(map.rios); 
-  osmWritter.export("rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+  osmWritter.export("data/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 }
