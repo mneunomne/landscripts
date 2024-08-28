@@ -25,6 +25,7 @@ static final int MICRODELAY_DEFAULT = 200;
 static final int CANVAS_MARGIN      = 0;
 
 static final boolean EXPORT_SVG     = false;
+static final boolean EXPORT_OMS     = true;
 
 /* states */
 static final int IDLE               = 0;
@@ -86,7 +87,11 @@ void setup() {
       background(0);
       map.drawBarreiras();
     endRecord();
-  } 
+  }
+
+  if (EXPORT_OMS) {
+    exportData();
+  }
 }
 
 void draw() {
@@ -167,4 +172,10 @@ void set_send_lines(int val) {
   //traveller.currentPointIndex = 0;
   println("goToLine", val);
   goToLine();
+}
+
+// export data as .osm
+void exportData () {
+  OSMWriter osmWritter = new OSMWriter(map.rios); 
+  osmWritter.export("rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 }

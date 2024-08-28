@@ -79,7 +79,7 @@ class Map {
         }
       }
       if (points.size() > 0) {
-        Line l = new Line(points);
+        Line l = new Line(points, coords);
         barreiras.add(l);
       }
       endShape(CLOSE);
@@ -97,7 +97,7 @@ class Map {
         }
       }
       if (points.size() > 0) {
-        Line l = new Line(points);
+        Line l = new Line(points, coords);
         rios.add(l);
       }
     }

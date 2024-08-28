@@ -16,11 +16,14 @@ class Line {
   boolean reachedStart = false;
   
   boolean visited = false;
+
+  PVector[] latlng;
   
-  Line(ArrayList<PVector> coords) {
+  Line(ArrayList<PVector> coords, PVector[] latlng) {
+    this.latlng = latlng;
     for (int i = 0; i < coords.size(); i++) {
       PVector coord = coords.get(i);
-      Point point = new Point((int)coord.x,(int)coord.y, i, i == coords.size() - 1, this);
+      Point point = new Point((int)coord.x,(int)coord.y, i, i == coords.size() - 1, this, latlng[i].x, latlng[i].y);
       points.add(point);
     }
     curPoint = points.get(0);

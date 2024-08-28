@@ -10,9 +10,14 @@ class Point {
 
   Line parentLine;
 
-  Point(int _x, int _y, int _index, boolean _endPoint, Line _parentLine) {
+  float lat;
+  float lng;
+
+  Point(int _x, int _y, int _index, boolean _endPoint, Line _parentLine, float _lat, float _lng) {
     x = _x;
     y = _y;
+    lat = _lat;
+    lng = _lng;
     pos = new PVector(x, y);
     index = _index;
     if (index == 0) {
