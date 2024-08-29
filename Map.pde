@@ -1,78 +1,87 @@
 class Map {
-
-  XML barreiras_kml;
-  XML rios_kml;
-
-
   ArrayList<PVector[]> barreiras_latlng = new ArrayList<PVector[]>();
   ArrayList<PVector[]> rios_latlng = new ArrayList<PVector[]>();
+	ArrayList<PVector[]> escritas_latlng = new ArrayList<PVector[]>();
 
   ArrayList<Line> barreiras = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
+	ArrayList<Line> escritas = new ArrayList<Line>();
 
   ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
+	ArrayList<Intersection> escritas_intersections = new ArrayList<Intersection>();
+	
 
   // top, bottom, right, left, 
-  PVector translate = new PVector(0, 70);
+  PVector translate = new PVector(0, 0);
 
   float[] bounds;
-  float minLat;
-  float maxLat;
-  float minLng;
-  float maxLng;
+  float minLat = -22.40732500;
+  float maxLat = -22.32425556;
+  float minLng = -43.10468333;	
+  float maxLng = -43.01486111;
 
-  Map(String lines_filename, String shapes_filename) {
-    // Load and parse the KML file
-    barreiras_kml = loadXML(shapes_filename);
-    
-    // Find all LineString elements
-    XML[] barreiras_xml = barreiras_kml.getChild("Document").getChild("Folder").getChildren("Placemark");
-    for (XML barreira_xml : barreiras_xml) {
-      XML coordinates = barreira_xml.getChild("Polygon").getChild("outerBoundaryIs").getChild("LinearRing").getChild("coordinates");
-      PVector[] coords = convertXmlCoords(coordinates);
-      barreiras_latlng.add(coords);
-    }
-    
-    rios_kml = loadXML(lines_filename);
-    XML[] rios_xml = rios_kml.getChild("Document").getChild("Folder").getChildren("Placemark");
-    for (XML rio_xml : rios_xml) {
-      String name = rio_xml.getChild("name").getContent();
-      XML coordinates;
-      if (name.equals("Margem")) {
-        coordinates = rio_xml.getChild("Polygon").getChild("outerBoundaryIs").getChild("LinearRing").getChild("coordinates");
-        continue;
-      } else {
-        coordinates = rio_xml.getChild("LineString").getChild("coordinates");
-      }
-      PVector[] coords = convertXmlCoords(coordinates);
-      rios_latlng.add(coords);
-    }
+  Map(String rios_filename, String barreiras_filename, String escritas_filename) {
+		// load rios as lines
+    parseLines(rios_filename, rios_latlng);
+		parseLines(escritas_filename, escritas_latlng);
+
+		// parse barreiras
+		parseShapes(barreiras_filename, barreiras_latlng);
     
     ArrayList<PVector[]> all_coords = new ArrayList<PVector[]>();
     all_coords.addAll(barreiras_latlng);
     all_coords.addAll(rios_latlng);
-    bounds = getBounds(barreiras_latlng);
-    minLat = bounds[0];
-    maxLat = bounds[1];
-    minLng = bounds[2];
-    maxLng = bounds[3];
+		all_coords.addAll(escritas_latlng);
+    // bounds = getBounds(barreiras_latlng);
+    // minLat = bounds[0];
+    // maxLat = bounds[1];
+    // minLng = bounds[2];
+    // maxLng = bounds[3];
   }
+	
+	void parseLines (String lines_filename, ArrayList<PVector[]> lines_latlng) {
+		XML lines_kml = loadXML(lines_filename);
+		XML[] lines_xml = lines_kml.getChild("Document").getChild("Folder").getChildren("Placemark");
+    for (XML line_xml : lines_xml) {
+      String name = line_xml.getChild("name").getContent();
+			//println(name);
+      XML coordinates;
+      coordinates = line_xml.getChild("LineString").getChild("coordinates");
+      PVector[] coords = convertXmlCoords(coordinates);
+      lines_latlng.add(coords);
+    }
+	}
+
+	void parseShapes (String shapes_filename, ArrayList<PVector[]> shapes_latlng) {
+		// Load and parse the KML file
+    XML shapes_kml = loadXML(shapes_filename);
+    
+    // Find all LineString elements
+    XML[] shapes_xml = shapes_kml.getChild("Document").getChild("Folder").getChildren("Placemark");
+    for (XML shape_xml : shapes_xml) {
+      XML coordinates = shape_xml.getChild("Polygon").getChild("outerBoundaryIs").getChild("LinearRing").getChild("coordinates");
+      PVector[] coords = convertXmlCoords(coordinates);
+      shapes_latlng.add(coords);
+    }
+	}
 
   void calculate() {
-    calculateBarreiras();
-    calculateRios();
+    calculateShapes(barreiras_latlng, barreiras);
+    calculateLines(rios_latlng, rios);
+		calculateLines(escritas_latlng, escritas);
     calculateIntersections(rios);
+		calculateIntersections(escritas);
   }
 
-  void calculateBarreiras() {
-    for (PVector[] coords : barreiras_latlng) {
+  void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
+    for (PVector[] coords : shapes_latlng) {
       beginShape();
       // clay color fill
       noFill();
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
-        float x = map(coord.x, minLat, maxLat, translate.x, width + translate.x);
-        float y = map(coord.y, minLng, maxLng, height + translate.y, translate.y);
+        float x = map(coord.x, minLng, maxLng, translate.x, width + translate.x);
+        float y = map(coord.y, minLat, maxLat, height + translate.y, translate.y);
         // if point is in bounds, add to points
         if (x > translate.x && x < width + translate.x && y > translate.y && y < height + translate.y) {
           points.add(new PVector(x, y));
@@ -80,38 +89,39 @@ class Map {
       }
       if (points.size() > 0) {
         Line l = new Line(points, coords);
-        barreiras.add(l);
+        shapes.add(l);
       }
       endShape(CLOSE);
     }
   }
 
-  void calculateRios() {
-    for (PVector[] coords : rios_latlng) {
+  void calculateLines(ArrayList<PVector[]> lines_latlng, ArrayList<Line> lines) {
+    for (PVector[] coords : lines_latlng) {
+			println("coords.length: " + coords.length);
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
-        float x = map(coord.x, minLat, maxLat, translate.x, width + translate.x);
-        float y = map(coord.y, minLng, maxLng, height + translate.y, translate.y);
+        float x = map(coord.x, minLng, maxLng, translate.x, width + translate.x);
+        float y = map(coord.y, minLat, maxLat, height + translate.y, translate.y);
         if (x > CANVAS_MARGIN && x < width - CANVAS_MARGIN && y > CANVAS_MARGIN && y < height - CANVAS_MARGIN) {
           points.add(new PVector(x, y));
         }
       }
       if (points.size() > 0) {
         Line l = new Line(points, coords);
-        rios.add(l);
+        lines.add(l);
       }
     }
     
     // reorder rios from biggest to smallest
-    Collections.sort(rios, new Comparator<Line>() {
+    Collections.sort(lines, new Comparator<Line>() {
       public int compare(Line a, Line b) {
         return b.size() - a.size();
       }
     });
     
     // set index for each line
-    for (int i = 0; i < rios.size(); i++) {
-      rios.get(i).setIndex(i);
+    for (int i = 0; i < lines.size(); i++) {
+      lines.get(i).setIndex(i);
     }
   }
 
@@ -125,7 +135,6 @@ class Map {
   }
 
   void drawBarreiras() {
-    
     // clay color stroke rgb: 244, 164, 96
     stroke(244, 164, 96);
 		fill(244, 164, 96, 100);
@@ -133,6 +142,14 @@ class Map {
       barreira.display();
     }
   }
+
+	void drawEscritas() {
+		stroke(255, 0, 0);
+		noFill();
+		for (Line escrita : escritas) {
+			escrita.display();
+		}
+	}
 
   void calculateIntersections(ArrayList<Line> lines) {
     for (int i = 0; i < lines.size(); i++) {
@@ -238,5 +255,6 @@ class Map {
 	void display() {
 		drawBarreiras();
 		drawRios();
+		drawEscritas();
 	}
 }

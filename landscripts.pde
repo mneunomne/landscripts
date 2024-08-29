@@ -27,7 +27,7 @@ static final int CANVAS_MARGIN      = 0;
 static final boolean EXPORT_SVG     = false;
 static final boolean EXPORT_OMS     = false;
 static final boolean SAVE_FRAME     = false;
-static final boolean NO_MACHINE 		= false;
+static final boolean NO_MACHINE 		= true;
 
 /* states */
 static final int IDLE               = 0;
@@ -54,21 +54,19 @@ String[] machine_states = {
   "MOVING_TO_ENDED",
   "DRAWING_TO_ENDED"
 };
+
 int machine_state = 0;
-
 int lastWaitTime = 0;
-
-
 int saveFrameCount = 0;
 
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
-  size(1000, 1000);
+  size(800, 800);
   
   machineController = new MachineController(this, NO_MACHINE);
   
-  map = new Map("rios.kml", "barreiras.kml");
+  map = new Map("rios.kml", "barreiras.kml", "escritas.kml");
   map.calculate();
   
   traveller = new Traveller("data/path.csv");
@@ -98,9 +96,7 @@ void setup() {
 void draw() {
   background(0);
   
-  map.drawRios();
-
-  map.drawBarreiras();
+  map.display();
   
   traveller.display();
 
