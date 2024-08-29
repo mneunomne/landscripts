@@ -73,9 +73,9 @@ class Map {
 		// add all lines to calculate intersections
 		all_lines.addAll(rios);
 		all_lines.addAll(escritas);
-    calculateIntersections(rios, rios, 5);
-		calculateIntersections(escritas, escritas, 30);
-		calculateIntersections(escritas, rios , 60);
+    calculateIntersections(rios, rios, 5, 10);
+		calculateIntersections(escritas, escritas, 30, 1);
+		calculateIntersections(escritas, rios , 100, 3);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
@@ -156,7 +156,7 @@ class Map {
 		}
 	}
 
-  void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance) {
+  void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance, int maxConnections) {
 		boolean excludent = lines1 != lines2;
     for (int i = 0; i < lines1.size(); i++) {
       Line line1 = lines1.get(i);
@@ -167,7 +167,6 @@ class Map {
 				if (line1.id == line2.id) continue;
         Intersection closestIntersection = null;
         for (int m = 0; m < line1.size(); m++) {
-          boolean hasIntersection = false;
           Point point1 = line1.getPoint(m);
           Point point2 = null;
           for (int k = 0; k < line2.size() - 1; k++) {
@@ -176,7 +175,6 @@ class Map {
             if (distance < minDistance) {
               minDistance = distance;
               closestIntersection = new Intersection(point1, point2, line1, line2);
-              hasIntersection = true;
             }
           }
         }
@@ -187,14 +185,17 @@ class Map {
           Line l2 = closestIntersection.l2;
 
           // check if line l2 already has intersection with l1
-          boolean hasIntersection = false;
-          for (Intersection intersection : l2.intersections) {
-            if (l2 == intersection.l1 && l1 == intersection.l2) {
-              hasIntersection = true;
-              break;
-            }
-          }
-					if (excludent) {
+					boolean hasIntersection = false;
+					hasIntersection = l1.intersections.size() > maxConnections || l2.intersections.size() > maxConnections;
+          if (!hasIntersection) {
+						for (Intersection intersection : l2.intersections) {
+							if (l2 == intersection.l1 && l1 == intersection.l2) {
+								hasIntersection = true;
+								break;
+							}
+						}
+					}
+					if (!hasIntersection && excludent) {
 						// check if current line already has intersection with any lines from lines2
 						for (Intersection intersection : l1.intersections) {
 							// find if any of the intersection.l2 can be found in lines2
