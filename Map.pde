@@ -73,22 +73,19 @@ class Map {
 		// add all lines to calculate intersections
 		all_lines.addAll(rios);
 		all_lines.addAll(escritas);
-    calculateIntersections(rios, rios, 5, 10);
-		calculateIntersections(escritas, escritas, 30, 1);
-		calculateIntersections(escritas, rios , 100, 3);
+    calculateIntersections(rios, rios, 5*scale, 10);
+		//calculateIntersections(escritas, escritas, 30*scale, 1);
+		//calculateIntersections(escritas, rios , 100*scale, 1);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
     for (PVector[] coords : shapes_latlng) {
-      beginShape();
-      // clay color fill
-      noFill();
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
-        float x = map(coord.x, minLng, maxLng, translate.x, width + translate.x);
-        float y = map(coord.y, minLat, maxLat, height + translate.y, translate.y);
+        float x = map(coord.x, minLng, maxLng, translate.x, CANVAS_WIDTH + translate.x);
+        float y = map(coord.y, minLat, maxLat, CANVAS_HEIGHT + translate.y, translate.y);
         // if point is in bounds, add to points
-        if (x > translate.x && x < width + translate.x && y > translate.y && y < height + translate.y) {
+        if (x > translate.x && x < CANVAS_WIDTH + translate.x && y > translate.y && y < CANVAS_HEIGHT + translate.y) {
           points.add(new PVector(x, y));
         }
       }
@@ -96,7 +93,6 @@ class Map {
         Line l = new Line(points, coords);
         shapes.add(l);
       }
-      endShape(CLOSE);
     }
   }
 
@@ -105,9 +101,9 @@ class Map {
 			println("coords.length: " + coords.length);
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
-        float x = map(coord.x, minLng, maxLng, translate.x, width + translate.x);
-        float y = map(coord.y, minLat, maxLat, height + translate.y, translate.y);
-        if (x > CANVAS_MARGIN && x < width - CANVAS_MARGIN && y > CANVAS_MARGIN && y < height - CANVAS_MARGIN) {
+        float x = map(coord.x, minLng, maxLng, translate.x, CANVAS_WIDTH + translate.x);
+        float y = map(coord.y, minLat, maxLat, CANVAS_HEIGHT + translate.y, translate.y);
+        if (x > CANVAS_MARGIN && x < CANVAS_WIDTH - CANVAS_MARGIN && y > CANVAS_MARGIN && y < CANVAS_HEIGHT - CANVAS_MARGIN) {
           points.add(new PVector(x, y));
         }
       }
@@ -132,8 +128,8 @@ class Map {
 
   void drawRios() {
     // blue color
-    stroke(0, 0, 255);
-		noFill();
+    pg.stroke(0, 0, 255);
+		pg.noFill();
     for (Line rio : rios) {
       rio.display();
     }
@@ -141,16 +137,16 @@ class Map {
 
   void drawBarreiras() {
     // clay color stroke rgb: 244, 164, 96
-    stroke(244, 164, 96);
-		fill(244, 164, 96, 100);
+    pg.stroke(244, 164, 96);
+		pg.fill(244, 164, 96, 100);
     for (Line barreira : barreiras) {
       barreira.display();
     }
   }
 
 	void drawEscritas() {
-		stroke(255, 0, 0);
-		noFill();
+		pg.stroke(255, 0, 0);
+		pg.noFill();
 		for (Line escrita : escritas) {
 			escrita.display();
 		}
@@ -186,7 +182,20 @@ class Map {
 
           // check if line l2 already has intersection with l1
 					boolean hasIntersection = false;
-					hasIntersection = l1.intersections.size() > maxConnections || l2.intersections.size() > maxConnections;
+					
+					// get connections that l1 with lines from lines2
+					int connections = 0;
+					for (Intersection intersection : l1.intersections) {
+						for (Line line : lines2) {
+							if (intersection.l2 == line) {
+								connections++;
+							}
+						}
+					}
+					if (connections >= maxConnections) {
+						// hasIntersection = true;
+					}
+
           if (!hasIntersection) {
 						for (Intersection intersection : l2.intersections) {
 							if (l2 == intersection.l1 && l1 == intersection.l2) {

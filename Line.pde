@@ -24,7 +24,7 @@ class Line {
     this.latlng = latlng;
     for (int i = 0; i < coords.size(); i++) {
       PVector coord = coords.get(i);
-      Point point = new Point((int)coord.x,(int)coord.y, i, i == coords.size() - 1, this, latlng[i].x, latlng[i].y);
+      Point point = new Point((int)coord.x,(int)coord.y, i, i == coords.size() - 1, this, latlng[i].y, latlng[i].x);
       points.add(point);
     }
     curPoint = points.get(0);
@@ -56,26 +56,27 @@ class Line {
   
   void display() {
 		// for visited points
-		pushStyle();
-			beginShape();
+		pg.pushStyle();
+			pg.beginShape();
 			for (Point point : points) {
 				if (point.visited) {
-					vertex(point.x, point.y);
+					pg.vertex(point.x, point.y);
 				}
 			}
 			// open shape, no fill inside
-			strokeWeight(3);
-			stroke(244, 164, 96);
-			endShape();
-		popStyle();
+			pg.strokeWeight(3);
+			pg.stroke(244, 164, 96);
+			pg.endShape();
+		pg.popStyle();
 		
 		
-		beginShape();
+		pg.beginShape();
+			pg.strokeWeight(scale);
 			for (Point point : points) {
-				vertex(point.x, point.y);
+				pg.vertex(point.x, point.y);
 				point.display();
 			}
-    endShape();
+    pg.endShape();
   }
   
   void addIntersection(Intersection intersection) {

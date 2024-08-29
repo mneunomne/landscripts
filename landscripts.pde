@@ -23,6 +23,12 @@ MachineController machineController;
 static final int WAITTIME_DEFAULT   = 2000;
 static final int MICRODELAY_DEFAULT = 200;
 static final int CANVAS_MARGIN      = 0;
+static final int CANVAS_WIDTH				= 1000;
+static final int CANVAS_HEIGHT      = 1000;
+static final int IMAGE_RESOLUTION   = 5000;
+static final int CSV_RESOLUTION		  = 1000;
+
+
 
 static final boolean EXPORT_SVG     = false;
 static final boolean EXPORT_OMS     = true;
@@ -59,17 +65,32 @@ int machine_state = 0;
 int lastWaitTime = 0;
 int saveFrameCount = 0;
 
+PImage bg;
+PGraphics pg;
+
+float scale = CANVAS_WIDTH / 800;
+
+float img_scale = IMAGE_RESOLUTION / 800;
+
+float csv_scale = CSV_RESOLUTION / 800;
+
+PVector translatePos = new PVector(0, 0);
+
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
   size(800, 800);
+
+	pg = createGraphics(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+	bg = loadImage("data/high_res_full.jpg");
   
   machineController = new MachineController(this, NO_MACHINE);
   
   map = new Map("rios.kml", "barreiras.kml", "escritas.kml");
   map.calculate();
   
-  traveller = new Traveller("data/path.csv");
+  traveller = new Traveller("data/rios.csv");
 
   cp5 = new ControlP5(this);
   gui = new Gui(cp5);
@@ -95,13 +116,31 @@ void setup() {
 
 void draw() {
   background(0);
+	pg.beginDraw();
+	pg.image(bg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   
   map.display();
   
   traveller.display();
+	machineController.display();
 
   machineController.update();
-  machineController.display();
+	pg.endDraw();
+
+	//image(pg, 0, 0, width, height);
+
+	// make translatePos the center of the screen
+	//translate(width/2 - translatePos.x, height/2 - translatePos.y);
+	// zoom image 2x 
+	//scale(3);
+	pushMatrix();
+	//translate(- translatePos.x/scale, -translatePos.y/scale);
+	image(pg, 0, 0, width, height);
+	//translate(translatePos.x/scale, translatePos.y/scale);
+	popMatrix();
+	// reset scale
+	//scale(1/3);
+	//translate(-width/2 + translatePos.x, -height/2 + translatePos.y);
 
 	if (SAVE_FRAME) {
 		if (frameCount % 2 == 0) {
@@ -113,8 +152,9 @@ void draw() {
 }
 
 void sendDrawLine() {
-	println("sendDrawLine");
   PVector nextPos = traveller.step();
+	translatePos.x = nextPos.x;
+	translatePos.y = nextPos.y;
   int x = int(nextPos.x);
   int y = int(nextPos.y);
   boolean valid = machineController.sendLine(x, y);
@@ -185,6 +225,8 @@ void set_send_lines(int val) {
 
 // export data as .osm
 void exportData () {
-  OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-  osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+  //OSMWriter osmWritter = new OSMWriter(map.all_lines); 
+  //osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+  OSMWriter osmWritter = new OSMWriter(map.rios); 
+  osmWritter.export("data/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 }

@@ -20,13 +20,13 @@ class Traveller {
   Traveller(String path_filename) {
     // load csv file
     // Load the CSV file
-    table = loadTable("data/path.csv", "header");
+    table = loadTable(path_filename, "header");
     // Iterate through the rows and print the values
     path = new ArrayList<PVector>();
     for (TableRow row : table.rows()) {
       String id = row.getString("id");
-      int x = row.getInt("x");
-      int y = row.getInt("y");
+      int x = int(row.getInt("x")/ csv_scale);
+      int y = int(row.getInt("y") / csv_scale);
       path.add(new PVector(x, y));
     }    
     curPos = path.get(0);
@@ -51,7 +51,7 @@ class Traveller {
   }
 
   void display () {
-    fill(255);
-    ellipse(curPos.x, curPos.y, 10, 10);
+    pg.fill(255);
+    pg.ellipse(curPos.x, curPos.y, 10, 10);
   }
 }

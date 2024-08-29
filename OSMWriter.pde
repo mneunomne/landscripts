@@ -25,12 +25,13 @@ class OSMWriter {
     
     for (Line line : lines) {
       for (Point point : line.points) {
-        PVector coord = new PVector(point.lat, point.lng);
+        PVector coord = new PVector(point.lng, point.lat);
+				PVector pos = new PVector(point.x, point.y);
         boolean isWithinBounds = coord.x >= minLon && coord.x <= maxLon && coord.y >= minLat && coord.y <= maxLat;
         if (!isWithinBounds) {
           continue;
         }
-        if (!nodeMap.containsKey(coord)) {
+        if (!nodeMap.containsKey(pos)) {
           long id = nodeId++;
           XML node = osm.addChild("node");
           node.setLong("id", id);
@@ -38,24 +39,25 @@ class OSMWriter {
           node.setFloat("lat", coord.y);
           node.setInt("x", point.x);
           node.setInt("y", point.y);
-          nodeMap.put(coord, id);
+          nodeMap.put(pos, id);
         }
         // if point is an intersection, add the latlng of the intersection
         if (point.hasIntersection) {
           for (Intersection intersection : point.intersections) {
-            coord = new PVector(intersection.lat, intersection.lng);
-            if (!nodeMap.containsKey(coord)) {
+            coord = new PVector(intersection.lng, intersection.lat);
+						pos = new PVector(intersection.x, intersection.y);
+            if (!nodeMap.containsKey(pos)) {
               long id = nodeId++;
               XML node = osm.addChild("node");
               node.setLong("id", id);
-              node.setFloat("lat", coord.x);
-              node.setFloat("lon", coord.y);
+              node.setFloat("lon", coord.x);
+              node.setFloat("lat", coord.y);
               node.setInt("x", intersection.x);
               node.setInt("y", intersection.y);
               // add interssection tag
               XML tag = node.addChild("tag");
               tag.setString("k", "intersection");
-              nodeMap.put(coord, id);
+              nodeMap.put(pos, id);
             }
           }
         }
@@ -66,18 +68,20 @@ class OSMWriter {
       XML way = osm.addChild("way");
       way.setLong("id", wayId++);
       for (Point point : line.points) {
-        PVector coord = new PVector(point.lat, point.lng);
+        PVector coord = new PVector(point.lng, point.lat);
+				PVector pos = new PVector(point.x, point.y);
         boolean isWithinBounds = coord.x >= minLon && coord.x <= maxLon && coord.y >= minLat && coord.y <= maxLat;
         if (!isWithinBounds) {
           continue;
         }
-        long id = nodeMap.get(coord);
+        long id = nodeMap.get(pos);
         XML nd = way.addChild("nd");
         nd.setString("ref", Long.toString(id));
         if (point.hasIntersection) {
           for (Intersection intersection : point.intersections) {
-            coord = new PVector(intersection.lat, intersection.lng);
-            id = nodeMap.get(coord);
+            coord = new PVector(intersection.lng, intersection.lat);
+						pos = new PVector(intersection.x, intersection.y);
+            id = nodeMap.get(pos);
             nd = way.addChild("nd");
             nd.setString("ref", Long.toString(id));
           }

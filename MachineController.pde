@@ -16,7 +16,7 @@ class MachineController {
   MachineController(PApplet parent, boolean _noMachine) {
     // if no machine, don't connect to serial
     noMachine = _noMachine;
-    machineCanvas = createGraphics(width, height);
+    machineCanvas = createGraphics(CANVAS_WIDTH, CANVAS_HEIGHT);
     if (noMachine) return; 
     // Connect to Serial
     print("[MachineController] SerialList: ");
@@ -76,11 +76,7 @@ class MachineController {
     machineCanvas.line(currentPos.x, currentPos.y-8, currentPos.x, currentPos.y+8);
     machineCanvas.endDraw();
 
-    // draw text current position // with line break
-    fill(0);
-    text("Current Position: " + currentPos.x + "\n" + currentPos.y, height - 40, 50);
-   
-    image(machineCanvas, CANVAS_MARGIN, CANVAS_MARGIN, width-(CANVAS_MARGIN*2), height-(CANVAS_MARGIN*2));
+    pg.image(machineCanvas, CANVAS_MARGIN, CANVAS_MARGIN, CANVAS_WIDTH-(CANVAS_MARGIN*2), CANVAS_HEIGHT-(CANVAS_MARGIN*2));
   }
 
   void listenToPort () {
@@ -127,12 +123,12 @@ class MachineController {
   
   void moveHomeX() {
     if (noMachine) return;
-    machineController.move(width, 0); // up
+    machineController.move(CANVAS_WIDTH, 0); // up
   }
   
   void moveHomeY() {
     if (noMachine) return;
-    machineController.move(0, -height); // up
+    machineController.move(0, -CANVAS_HEIGHT); // up
   }
   
   void move(int x, int y) {
