@@ -1,8 +1,10 @@
 class Map {
+
   ArrayList<PVector[]> barreiras_latlng = new ArrayList<PVector[]>();
   ArrayList<PVector[]> rios_latlng = new ArrayList<PVector[]>();
 	ArrayList<PVector[]> escritas_latlng = new ArrayList<PVector[]>();
 
+	ArrayList<Line> all_lines = new ArrayList<Line>();
   ArrayList<Line> barreiras = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
 	ArrayList<Line> escritas = new ArrayList<Line>();
@@ -10,7 +12,6 @@ class Map {
   ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
 	ArrayList<Intersection> escritas_intersections = new ArrayList<Intersection>();
 	
-
   // top, bottom, right, left, 
   PVector translate = new PVector(0, 0);
 
@@ -69,9 +70,13 @@ class Map {
     calculateShapes(barreiras_latlng, barreiras);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
-    calculateIntersections(rios);
-		calculateIntersections(escritas);
-  }
+		// add all lines to calculate intersections
+		all_lines.addAll(rios);
+		all_lines.addAll(escritas);
+    calculateIntersections(rios, rios, 5);
+		calculateIntersections(escritas, escritas, 30);
+		calculateIntersections(escritas, rios , 60);
+	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
     for (PVector[] coords : shapes_latlng) {
@@ -151,14 +156,15 @@ class Map {
 		}
 	}
 
-  void calculateIntersections(ArrayList<Line> lines) {
-    for (int i = 0; i < lines.size(); i++) {
-      Line line1 = lines.get(i);
+  void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance) {
+		boolean excludent = lines1 != lines2;
+    for (int i = 0; i < lines1.size(); i++) {
+      Line line1 = lines1.get(i);
       Line line2;
-      float minDistance = 2.5;
-      for (int j = 0; j < lines.size(); j++) {
-        if (i == j) continue;
-        line2 = lines.get(j);
+			float minDistance = _minDistance;
+      for (int j = 0; j < lines2.size(); j++) {
+        line2 = lines2.get(j);
+				if (line1.id == line2.id) continue;
         Intersection closestIntersection = null;
         for (int m = 0; m < line1.size(); m++) {
           boolean hasIntersection = false;
@@ -188,6 +194,26 @@ class Map {
               break;
             }
           }
+					if (excludent) {
+						// check if current line already has intersection with any lines from lines2
+						for (Intersection intersection : l1.intersections) {
+							// find if any of the intersection.l2 can be found in lines2
+							for (Line line : lines2) {
+								if (intersection.l2 == line) {
+									hasIntersection = true;
+									break;
+								} else {
+									// also check for the intersecrtions of the intersection.l2, if they are connected to any lines2
+									for (Intersection intersection2 : intersection.l2.intersections) {
+										if (intersection2.l2 == line) {
+											hasIntersection = true;
+											break;
+										}
+									}
+								}
+							} 
+						}
+					}
           if (!hasIntersection) {
             p1.addIntersection(closestIntersection);
             p2.addIntersection(closestIntersection);
@@ -253,7 +279,7 @@ class Map {
 	}
 
 	void display() {
-		drawBarreiras();
+		//drawBarreiras();
 		drawRios();
 		drawEscritas();
 	}

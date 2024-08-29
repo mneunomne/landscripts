@@ -25,7 +25,7 @@ static final int MICRODELAY_DEFAULT = 200;
 static final int CANVAS_MARGIN      = 0;
 
 static final boolean EXPORT_SVG     = false;
-static final boolean EXPORT_OMS     = false;
+static final boolean EXPORT_OMS     = true;
 static final boolean SAVE_FRAME     = false;
 static final boolean NO_MACHINE 		= true;
 
@@ -185,6 +185,6 @@ void set_send_lines(int val) {
 
 // export data as .osm
 void exportData () {
-  OSMWriter osmWritter = new OSMWriter(map.rios); 
-  osmWritter.export("data/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+  OSMWriter osmWritter = new OSMWriter(map.all_lines); 
+  osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 }

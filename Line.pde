@@ -18,7 +18,8 @@ class Line {
   boolean visited = false;
 
   PVector[] latlng;
-  
+	String id;
+
   Line(ArrayList<PVector> coords, PVector[] latlng) {
     this.latlng = latlng;
     for (int i = 0; i < coords.size(); i++) {
@@ -28,6 +29,8 @@ class Line {
     }
     curPoint = points.get(0);
     curIndex = 0;
+		// generate id
+		this.id = "line_" + (int)random(1000000);
   }
   
   Point step(int direction) {
@@ -70,7 +73,7 @@ class Line {
 		beginShape();
 			for (Point point : points) {
 				vertex(point.x, point.y);
-				//point.display();
+				point.display();
 			}
     endShape();
   }

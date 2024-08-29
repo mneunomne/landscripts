@@ -31,7 +31,8 @@ class Point {
 
   void display() {
 		pushStyle();
-    if (endPoint) {
+    /*
+		if (endPoint) {
       fill(0, 255, 0);
 			ellipse(pos.x, pos.y, 5, 5);
     }
@@ -39,11 +40,21 @@ class Point {
       fill(0, 0, 255);
 			ellipse(pos.x, pos.y, 5, 5);
     }
+		*/
     if (hasIntersection) {
       // draw cross
-      stroke(255, 0, 0);
-      line(pos.x - 5, pos.y - 5, pos.x + 5, pos.y + 5);
-      line(pos.x + 5, pos.y - 5, pos.x - 5, pos.y + 5);
+      stroke(255);
+			for (Intersection intersection : intersections) {
+				Line l1 = intersection.l1;
+				Line l2 = intersection.l2;
+				if (l1 == parentLine) {
+					// draw from position to position
+					stroke(0, 255, 0);
+					line(intersection.p1.pos.x, intersection.p1.pos.y, intersection.p2.pos.x, intersection.p2.pos.y);
+				}
+			}
+      //line(pos.x - 5, pos.y - 5, pos.x + 5, pos.y + 5);
+      //line(pos.x + 5, pos.y - 5, pos.x - 5, pos.y + 5);
     }
     // ellipse(pos.x, pos.y, 3, 3);
 		popStyle();

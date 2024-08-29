@@ -1,9 +1,9 @@
 
 class OSMWriter {
-  ArrayList<Line> rios;
+  ArrayList<Line> lines;
   
-  OSMWriter(ArrayList<Line> _rios) {
-    this.rios = _rios;
+  OSMWriter(ArrayList<Line> _lines) {
+    this.lines = _lines;
   }
   
   void export(String filename, float minLat, float minLon, float maxLat, float maxLon) {
@@ -23,10 +23,10 @@ class OSMWriter {
     
     HashMap<PVector, Long> nodeMap = new HashMap<>();
     
-    for (Line line : rios) {
+    for (Line line : lines) {
       for (Point point : line.points) {
         PVector coord = new PVector(point.lat, point.lng);
-        boolean isWithinBounds = coord.x >= minLat && coord.x <= maxLat && coord.y >= minLon && coord.y <= maxLon;
+        boolean isWithinBounds = coord.x >= minLon && coord.x <= maxLon && coord.y >= minLat && coord.y <= maxLat;
         if (!isWithinBounds) {
           continue;
         }
@@ -34,8 +34,8 @@ class OSMWriter {
           long id = nodeId++;
           XML node = osm.addChild("node");
           node.setLong("id", id);
-          node.setFloat("lat", coord.x);
-          node.setFloat("lon", coord.y);
+          node.setFloat("lon", coord.x);
+          node.setFloat("lat", coord.y);
           node.setInt("x", point.x);
           node.setInt("y", point.y);
           nodeMap.put(coord, id);
@@ -62,12 +62,12 @@ class OSMWriter {
       }
     }
     
-    for (Line line : rios) {
+    for (Line line : lines) {
       XML way = osm.addChild("way");
       way.setLong("id", wayId++);
       for (Point point : line.points) {
         PVector coord = new PVector(point.lat, point.lng);
-        boolean isWithinBounds = coord.x >= minLat && coord.x <= maxLat && coord.y >= minLon && coord.y <= maxLon;
+        boolean isWithinBounds = coord.x >= minLon && coord.x <= maxLon && coord.y >= minLat && coord.y <= maxLat;
         if (!isWithinBounds) {
           continue;
         }
