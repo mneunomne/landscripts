@@ -1,11 +1,11 @@
 class Map {
 
-  ArrayList<PVector[]> barreiras_latlng = new ArrayList<PVector[]>();
+  ArrayList<PVector[]> simplified_latlng = new ArrayList<PVector[]>();
   ArrayList<PVector[]> rios_latlng = new ArrayList<PVector[]>();
 	ArrayList<PVector[]> escritas_latlng = new ArrayList<PVector[]>();
 
 	ArrayList<Line> all_lines = new ArrayList<Line>();
-  ArrayList<Line> barreiras = new ArrayList<Line>();
+  ArrayList<Line> simplified = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
 	ArrayList<Line> escritas = new ArrayList<Line>();
 
@@ -21,19 +21,19 @@ class Map {
   float minLng = -43.10468333;	
   float maxLng = -43.01486111;
 
-  Map(String rios_filename, String barreiras_filename, String escritas_filename) {
+  Map(String rios_filename, String simplified_filename, String escritas_filename) {
 		// load rios as lines
     parseLines(rios_filename, rios_latlng);
 		parseLines(escritas_filename, escritas_latlng);
 
-		// parse barreiras
-		parseShapes(barreiras_filename, barreiras_latlng);
+		// parse simplified
+		parseLines(simplified_filename, simplified_latlng);
     
     ArrayList<PVector[]> all_coords = new ArrayList<PVector[]>();
-    all_coords.addAll(barreiras_latlng);
+    all_coords.addAll(simplified_latlng);
     all_coords.addAll(rios_latlng);
 		all_coords.addAll(escritas_latlng);
-    // bounds = getBounds(barreiras_latlng);
+    // bounds = getBounds(simplified_latlng);
     // minLat = bounds[0];
     // maxLat = bounds[1];
     // minLng = bounds[2];
@@ -67,15 +67,16 @@ class Map {
 	}
 
   void calculate() {
-    calculateShapes(barreiras_latlng, barreiras);
+    calculateShapes(simplified_latlng, simplified);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
 		// add all lines to calculate intersections
-		all_lines.addAll(rios);
+		all_lines.addAll(simplified);
 		all_lines.addAll(escritas);
-    calculateIntersections(rios, rios, 5*scale, 10);
-		//calculateIntersections(escritas, escritas, 30*scale, 1);
-		//calculateIntersections(escritas, rios , 100*scale, 1);
+    calculateIntersections(rios, rios, 10*scale, 10);
+		calculateIntersections(simplified, simplified , 5*scale, 10);
+		calculateIntersections(escritas, escritas, 30*scale, 1);
+		calculateIntersections(escritas, simplified, 100*scale, 1);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
@@ -135,12 +136,14 @@ class Map {
     }
   }
 
-  void drawBarreiras() {
+  void drawSimplified() {
     // clay color stroke rgb: 244, 164, 96
-    pg.stroke(244, 164, 96);
-		pg.fill(244, 164, 96, 100);
-    for (Line barreira : barreiras) {
-      barreira.display();
+    // teal
+		pg.stroke(0, 128, 128);
+		//pg.fill(244, 164, 96, 100);
+		pg.noFill();
+    for (Line line : simplified) {
+      line.display();
     }
   }
 
@@ -286,11 +289,19 @@ class Map {
 				}
 			}
 		}
+		// all_lines
+		for (Line line : all_lines) {
+			for (Point point : line.points) {
+				if (point.x == pos.x && point.y == pos.y) {
+					points.add(point);
+				}
+			}
+		}
 		return points;
 	}
 
 	void display() {
-		//drawBarreiras();
+		drawSimplified();
 		drawRios();
 		drawEscritas();
 	}

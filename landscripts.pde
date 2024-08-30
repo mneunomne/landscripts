@@ -31,9 +31,10 @@ static final int CSV_RESOLUTION		  = 1000;
 
 
 static final boolean EXPORT_SVG     = false;
-static final boolean EXPORT_OMS     = true;
+static final boolean EXPORT_OMS     = false;
 static final boolean SAVE_FRAME     = false;
-static final boolean NO_MACHINE 		= false;
+static final boolean NO_MACHINE 		= true;
+static final boolean NO_INTERFACE 	= true;
 
 /* states */
 static final int IDLE               = 0;
@@ -76,6 +77,8 @@ float csv_scale = CSV_RESOLUTION / 800;
 
 PVector translatePos = new PVector(0, 0);
 
+String[] pathFiles = {"data/paths/simplified_escritas.csv", "data/paths/path.csv"};
+
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
@@ -83,14 +86,14 @@ void setup() {
 
 	pg = createGraphics(CANVAS_WIDTH, CANVAS_HEIGHT);
 
-	bg = loadImage("data/high_res_full.jpg");
+	bg = loadImage("data/img/high_res_full.jpg");
   
   machineController = new MachineController(this, NO_MACHINE);
   
-  map = new Map("rios_simplified.kml", "barreiras.kml", "escritas.kml");
+  map = new Map("kml/rios.kml", "kml/rios_simplified.kml", "kml/escritas.kml");
   map.calculate();
   
-  traveller = new Traveller("data/rios_simplified.csv");
+  traveller = new Traveller(pathFiles);
 
   cp5 = new ControlP5(this);
   gui = new Gui(cp5);
@@ -105,42 +108,36 @@ void setup() {
     endRecord();
     beginRecord(SVG, "data/barreiras.svg");
       background(0);
-      map.drawBarreiras();
+      map.drawSimplified();
     endRecord();
   }
 
   if (EXPORT_OMS) {
-    exportData();
+    exportData("rios");
+		exportData("simplified_escritas");
   }
 }
 
 void draw() {
-  background(0);
-	pg.beginDraw();
-	pg.image(bg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  
-  //map.display();
-  
-  //traveller.display();
-	machineController.display();
-
+	background(0);
   machineController.update();
+	pg.beginDraw();
+	pg.background(0);
+	//pg.image(bg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+	map.display();
+	traveller.display();
+	machineController.display();
 	pg.endDraw();
 
-	//image(pg, 0, 0, width, height);
+	if (!NO_INTERFACE) {
+	}
 
-	// make translatePos the center of the screen
-	//translate(width/2 - translatePos.x, height/2 - translatePos.y);
-	// zoom image 2x 
-	//scale(3);
-	pushMatrix();
-	//translate(- translatePos.x/scale, -translatePos.y/scale);
+	// display fps
 	image(pg, 0, 0, width, height);
-	//translate(translatePos.x/scale, translatePos.y/scale);
-	popMatrix();
-	// reset scale
-	//scale(1/3);
-	//translate(-width/2 + translatePos.x, -height/2 + translatePos.y);
+
+
+	fill(255);
+	text("fps: " + int(frameRate), 10, 10);
 
 	if (SAVE_FRAME) {
 		if (frameCount % 2 == 0) {
@@ -224,9 +221,17 @@ void set_send_lines(int val) {
 }
 
 // export data as .osm
-void exportData () {
+void exportData (String type) {
   //OSMWriter osmWritter = new OSMWriter(map.all_lines); 
   //osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
-  OSMWriter osmWritter = new OSMWriter(map.rios); 
-  osmWritter.export("data/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+
+	if (type == "rios") {
+		OSMWriter osmWritter = new OSMWriter(map.rios); 
+		osmWritter.export("data/osm/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
+
+	if (type == "simplified_escritas") {
+		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
+		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
 }
