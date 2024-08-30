@@ -70,13 +70,14 @@ class Map {
     calculateLines(simplified_latlng, simplified);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
+		//
+		all_lines.addAll(simplified);
+		all_lines.addAll(escritas);
 		// add all lines to calculate intersections
     calculateIntersections(rios, rios, 10*scale, 9999);
-		// calculateIntersections(simplified, simplified , 10*scale, 2);
+		calculateIntersections(simplified, simplified , 10*scale, 10);
 		calculateIntersections(escritas, escritas, 30*scale, 1);
-		calculateIntersections(escritas, rios, 30*scale, 1);
-		all_lines.addAll(escritas);
-		all_lines.addAll(rios);
+		calculateIntersections(escritas, simplified, 100*scale, 1);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
@@ -197,7 +198,7 @@ class Map {
 						}
 					}
 					if (connections >= maxConnections) {
-						hasIntersection = true;
+						//hasIntersection = true;
 					}
 
           if (!hasIntersection) {

@@ -75,7 +75,7 @@ float csv_scale = CSV_RESOLUTION / 800;
 
 PVector translatePos = new PVector(0, 0);
 
-String[] pathFiles = {"data/paths/rios.csv", "data/paths/simplified_escritas.csv", };
+String[] pathFiles = {"data/paths/simplified.csv", "data/paths/simplified_escritas.csv", "data/paths/rios.csv"};
 
 void setup() {  
   //name of sketch
@@ -113,7 +113,7 @@ void setup() {
   if (EXPORT_OMS) {
     exportData("rios");
 		exportData("rios_escritas");
-		//exportData("simplified");
+		exportData("simplified");
   }
 }
 
@@ -231,7 +231,7 @@ void exportData (String type) {
 
 	if (type == "rios_escritas") {
 		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-		osmWritter.export("data/osm/rios_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 	}
 
 	if (type == "simplified") {
