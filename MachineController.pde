@@ -85,14 +85,14 @@ class MachineController {
     if (port.available() > 0) {
       String inBuffer = port.readStringUntil('\n');
       if (inBuffer != null) {
-        println("[MachineController] Received: " + inBuffer);
+        if (DEBUG) println("[MachineController] Received: " + inBuffer);
         // if message is 'e' means the movement is over
         if (inBuffer.contains("end")) {
           //String index = inBuffer.substring(3, inBuffer.length()-1);
           //int point_index = int(index);
           //println("END: " + point_index);
 
-					println("machine_state", machine_state);
+					if (DEBUG) println("machine_state", machine_state);
 
           if (machine_state == MOVING_TO) {
             machine_state = MOVING_TO_ENDED;
@@ -100,17 +100,17 @@ class MachineController {
             machine_state = DRAWING_TO_ENDED;
           }
 
-					println("machine_state", machine_state);
+					if (DEBUG) println("machine_state", machine_state);
 					
           currentPos = nextPos;
           
           if (inBuffer.contains("limit")) {
             if (inBuffer.contains("end_limit_x")) {
-              println("end_limit_x");
+              if (DEBUG) println("end_limit_x");
               currentPos.x = 0;
             }
             if (inBuffer.contains("end_limit_y")) {
-              println("end_limit_y");
+              if (DEBUG) println("end_limit_y");
               currentPos.y = 0;
             }
             storePosition(currentPos.x, currentPos.y);
