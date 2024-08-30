@@ -28,10 +28,8 @@ static final int CANVAS_HEIGHT      = 1000;
 static final int IMAGE_RESOLUTION   = 5000;
 static final int CSV_RESOLUTION		  = 1000;
 
-
-
 static final boolean EXPORT_SVG     = false;
-static final boolean EXPORT_OMS     = false;
+static final boolean EXPORT_OMS     = true;
 static final boolean SAVE_FRAME     = false;
 static final boolean NO_MACHINE 		= true;
 static final boolean NO_INTERFACE 	= true;
@@ -77,7 +75,7 @@ float csv_scale = CSV_RESOLUTION / 800;
 
 PVector translatePos = new PVector(0, 0);
 
-String[] pathFiles = {"data/paths/simplified_escritas.csv", "data/paths/path.csv"};
+String[] pathFiles = {"data/paths/rios.csv", "data/paths/simplified_escritas.csv", };
 
 void setup() {  
   //name of sketch
@@ -90,7 +88,7 @@ void setup() {
   
   machineController = new MachineController(this, NO_MACHINE);
   
-  map = new Map("kml/rios.kml", "kml/rios_simplified.kml", "kml/escritas.kml");
+  map = new Map("kml/rios.kml", "kml/simplified.kml", "kml/escritas.kml");
   map.calculate();
   
   traveller = new Traveller(pathFiles);
@@ -114,7 +112,8 @@ void setup() {
 
   if (EXPORT_OMS) {
     exportData("rios");
-		exportData("simplified_escritas");
+		exportData("rios_escritas");
+		//exportData("simplified");
   }
 }
 
@@ -230,8 +229,13 @@ void exportData (String type) {
 		osmWritter.export("data/osm/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 	}
 
-	if (type == "simplified_escritas") {
+	if (type == "rios_escritas") {
 		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+		osmWritter.export("data/osm/rios_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
+
+	if (type == "simplified") {
+		OSMWriter osmWritter = new OSMWriter(map.simplified); 
+		osmWritter.export("data/osm/simplified.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 	}
 }

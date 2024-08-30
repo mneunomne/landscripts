@@ -16,10 +16,10 @@ class Map {
   PVector translate = new PVector(0, 0);
 
   float[] bounds;
-  float minLat = -22.40732500;
-  float maxLat = -22.32425556;
-  float minLng = -43.10468333;	
-  float maxLng = -43.01486111;
+  float minLat = -22.40520000; //-22.40732500;
+  float maxLat = -22.32638056; //-22.32425556;
+  float minLng = -43.10237778; //-43.10468333;	
+  float maxLng = -43.01715833; //-43.01486111;
 
   Map(String rios_filename, String simplified_filename, String escritas_filename) {
 		// load rios as lines
@@ -67,16 +67,16 @@ class Map {
 	}
 
   void calculate() {
-    calculateShapes(simplified_latlng, simplified);
+    calculateLines(simplified_latlng, simplified);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
 		// add all lines to calculate intersections
-		all_lines.addAll(simplified);
-		all_lines.addAll(escritas);
-    calculateIntersections(rios, rios, 10*scale, 10);
-		calculateIntersections(simplified, simplified , 5*scale, 10);
+    calculateIntersections(rios, rios, 10*scale, 9999);
+		// calculateIntersections(simplified, simplified , 10*scale, 2);
 		calculateIntersections(escritas, escritas, 30*scale, 1);
-		calculateIntersections(escritas, simplified, 100*scale, 1);
+		calculateIntersections(escritas, rios, 30*scale, 1);
+		all_lines.addAll(escritas);
+		all_lines.addAll(rios);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
@@ -157,6 +157,7 @@ class Map {
 
   void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance, int maxConnections) {
 		boolean excludent = lines1 != lines2;
+		println("excludent", excludent);
     for (int i = 0; i < lines1.size(); i++) {
       Line line1 = lines1.get(i);
       Line line2;
@@ -196,7 +197,7 @@ class Map {
 						}
 					}
 					if (connections >= maxConnections) {
-						// hasIntersection = true;
+						hasIntersection = true;
 					}
 
           if (!hasIntersection) {

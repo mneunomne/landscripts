@@ -45,7 +45,7 @@ class Traveller {
     int nextPathIndex = (curPathIndex + 1) % paths.size();
     PVector nextPathFirstPos = paths.get(nextPathIndex).get(0);
     
-    if (curPos.dist(nextPathFirstPos) < threshold) {
+    if (curPos.dist(nextPathFirstPos) < threshold && direction == -1) {
       curPathIndex = nextPathIndex;
       curIndex = 0;
       direction = 1;
