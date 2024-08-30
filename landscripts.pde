@@ -10,6 +10,7 @@ import processing.serial.*;
 import processing.svg.*;
 import java.util.Collections;
 import java.util.Comparator;
+import websockets.*;
 
 /* class objects */
 Traveller traveller;
@@ -31,9 +32,11 @@ static final int CSV_RESOLUTION		  = 1000;
 static final boolean EXPORT_SVG     = false;
 static final boolean EXPORT_OMS     = false;
 static final boolean SAVE_FRAME     = false;
-static final boolean NO_MACHINE 		= false;
+static final boolean NO_MACHINE 		= true;
 static final boolean NO_INTERFACE 	= true;
+static final boolean SHOW_IMAGE 		= false;
 static final boolean DEBUG 					= false;
+static final boolean SOCKET_ENABLED = true;
 
 /* states */
 static final int IDLE               = 0;
@@ -76,12 +79,16 @@ float csv_scale = CSV_RESOLUTION / 800;
 
 PVector translatePos = new PVector(0, 0);
 
-String[] pathFiles = {"data/paths/simplified.csv", "data/paths/rios.csv"};
+WebsocketServer server;
+
+String[] pathFiles = {"data/paths/rios.csv", "data/paths/simplified.csv"};
 
 void setup() {  
   //name of sketch
   surface.setTitle("Landscripts");
   size(800, 800);
+
+	server = new WebsocketServer(this, 8080, "/");
 
 	pg = createGraphics(CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -123,7 +130,6 @@ void draw() {
   machineController.update();
 	pg.beginDraw();
 	pg.background(0);
-	//pg.image(bg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 	map.display();
 	traveller.display();
 	machineController.display();
@@ -150,6 +156,13 @@ void draw() {
 
 void sendDrawLine() {
   PVector nextPos = traveller.step();
+	if (SOCKET_ENABLED) {
+		 // Send the current mouse position as JSON to all clients
+		JSONObject position = new JSONObject();
+		position.setInt("x", int(nextPos.x));
+		position.setInt("y", int(nextPos.y));
+		server.sendMessage(position.toString());
+	}
 	translatePos.x = nextPos.x;
 	translatePos.y = nextPos.y;
   int x = int(nextPos.x);
