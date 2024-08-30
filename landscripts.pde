@@ -33,7 +33,7 @@ static final int CSV_RESOLUTION		  = 1000;
 static final boolean EXPORT_SVG     = false;
 static final boolean EXPORT_OMS     = true;
 static final boolean SAVE_FRAME     = false;
-static final boolean NO_MACHINE 		= true;
+static final boolean NO_MACHINE 		= false;
 
 /* states */
 static final int IDLE               = 0;
@@ -87,10 +87,10 @@ void setup() {
   
   machineController = new MachineController(this, NO_MACHINE);
   
-  map = new Map("rios.kml", "barreiras.kml", "escritas.kml");
+  map = new Map("rios_simplified.kml", "barreiras.kml", "escritas.kml");
   map.calculate();
   
-  traveller = new Traveller("data/rios.csv");
+  traveller = new Traveller("data/rios_simplified.csv");
 
   cp5 = new ControlP5(this);
   gui = new Gui(cp5);
@@ -119,9 +119,9 @@ void draw() {
 	pg.beginDraw();
 	pg.image(bg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   
-  map.display();
+  //map.display();
   
-  traveller.display();
+  //traveller.display();
 	machineController.display();
 
   machineController.update();

@@ -268,6 +268,7 @@ class Map {
     String[] s_coordinates = coordinates.getContent().split(" ");
     PVector[] coords = new PVector[s_coordinates.length];
     for (int i = 0; i < s_coordinates.length; i++) {
+			println("s_coordinates[i]", s_coordinates[i] ,i);
       float lat = Float.parseFloat(s_coordinates[i].split(",")[0]);
       float lng = Float.parseFloat(s_coordinates[i].split(",")[1]);
       PVector location = new PVector(lat, lng);
