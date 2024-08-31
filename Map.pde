@@ -297,11 +297,13 @@ class Map {
   }
 
 	ArrayList<Point> getPointsFromPos (PVector pos) {
+		boolean wasFound = false;
 		ArrayList<Point> points = new ArrayList<Point>();
 		for (Line rio : rios) {
 			for (Point point : rio.points) {
 				if (point.x == pos.x && point.y == pos.y) {
 					points.add(point);
+					wasFound = true;
 				}
 			}
 		}
@@ -310,10 +312,20 @@ class Map {
 			for (Point point : line.points) {
 				if (point.x == pos.x && point.y == pos.y) {
 					points.add(point);
+					wasFound = true;
 				}
 			}
 		}
 		return points;
+	}
+
+	JSONObject getLatLngFromPos (PVector pos) {
+		float lat = map(pos.y, CANVAS_WIDTH, 0, minLat, maxLat);
+		float lng = map(pos.x, 0, CANVAS_HEIGHT, minLng, maxLng);
+		JSONObject latlng = new JSONObject();
+		latlng.setFloat("lat", lat);
+		latlng.setFloat("lng", lng);
+		return latlng;
 	}
 
 	void display() {

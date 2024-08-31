@@ -170,11 +170,9 @@ void draw() {
 
 void sendDrawLine() {
   PVector nextPos = traveller.step();
+	// get latlng of first point of next path
 	if (SOCKET_ENABLED) {
-		 // Send the current mouse position as JSON to all clients
-		JSONObject position = new JSONObject();
-		position.setInt("x", int(nextPos.x));
-		position.setInt("y", int(nextPos.y));
+		JSONObject position = map.getLatLngFromPos(nextPos);
 		server.sendMessage(position.toString());
 	}
 	translatePos.x = nextPos.x;
