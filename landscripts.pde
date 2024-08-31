@@ -40,10 +40,10 @@ static final boolean SOCKET_ENABLED 		= true;
 static final boolean SHOW_INTERSECTIONS = false;
 
 /* states */
-static final int IDLE               = 0;
-static final int DRAW_MODE          = 1;
-static final int SEND_LINES         = 2;
-static final int WAIT_DRAW_NEXT     = 3;
+static final int IDLE              		 	= 0;
+static final int DRAW_MODE         		 	= 1;
+static final int SEND_LINES        		 	= 2;
+static final int WAIT_DRAW_NEXT    		 	= 3;
 String[] states = {
   "IDLE",
   "DRAW_MODE",
