@@ -3,11 +3,15 @@ class Map {
   ArrayList<PVector[]> simplified_latlng = new ArrayList<PVector[]>();
   ArrayList<PVector[]> rios_latlng = new ArrayList<PVector[]>();
 	ArrayList<PVector[]> escritas_latlng = new ArrayList<PVector[]>();
+	ArrayList<PVector[]> barreiras_latlng = new ArrayList<PVector[]>();
 
 	ArrayList<Line> all_lines = new ArrayList<Line>();
   ArrayList<Line> simplified = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
 	ArrayList<Line> escritas = new ArrayList<Line>();
+
+	// shapes
+	ArrayList<Shape> barreiras = new ArrayList<Shape>();
 
   ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
 	ArrayList<Intersection> escritas_intersections = new ArrayList<Intersection>();
@@ -21,10 +25,13 @@ class Map {
   float minLng = -43.10237778; //-43.10468333;	
   float maxLng = -43.01715833; //-43.01486111;
 
-  Map(String rios_filename, String simplified_filename, String escritas_filename) {
+  Map(String rios_filename, String simplified_filename, String escritas_filename, String barreiras_filename) {
 		// load rios as lines
     parseLines(rios_filename, rios_latlng);
 		parseLines(escritas_filename, escritas_latlng);
+
+		// parse shapes
+		parseShapes(barreiras_filename, barreiras_latlng);
 
 		// parse simplified
 		parseLines(simplified_filename, simplified_latlng);
@@ -70,6 +77,7 @@ class Map {
     calculateLines(simplified_latlng, simplified);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
+		calculateShapes(barreiras_latlng, barreiras);
 		//
 		all_lines.addAll(simplified);
 		all_lines.addAll(escritas);
@@ -80,27 +88,26 @@ class Map {
 		calculateIntersections(escritas, simplified, 100*scale, 1);
 	}
 
-  void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Line> shapes) {
+  void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Shape> shapes) {
     for (PVector[] coords : shapes_latlng) {
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
         float x = map(coord.x, minLng, maxLng, translate.x, CANVAS_WIDTH + translate.x);
         float y = map(coord.y, minLat, maxLat, CANVAS_HEIGHT + translate.y, translate.y);
         // if point is in bounds, add to points
-        if (x > translate.x && x < CANVAS_WIDTH + translate.x && y > translate.y && y < CANVAS_HEIGHT + translate.y) {
+        if (x > CANVAS_MARGIN && x < CANVAS_WIDTH - CANVAS_MARGIN && y > CANVAS_MARGIN && y < CANVAS_HEIGHT - CANVAS_MARGIN) {
           points.add(new PVector(x, y));
         }
       }
       if (points.size() > 0) {
-        Line l = new Line(points, coords);
-        shapes.add(l);
+        Shape s = new Shape(points);
+        shapes.add(s);
       }
     }
   }
 
   void calculateLines(ArrayList<PVector[]> lines_latlng, ArrayList<Line> lines) {
     for (PVector[] coords : lines_latlng) {
-			println("coords.length: " + coords.length);
       ArrayList<PVector> points = new ArrayList<PVector>();
       for (PVector coord : coords) {
         float x = map(coord.x, minLng, maxLng, translate.x, CANVAS_WIDTH + translate.x);
@@ -137,6 +144,15 @@ class Map {
     }
   }
 
+	void drawBarreiras() {
+    // clay color
+		pg.stroke(244, 164, 96);
+		pg.fill(244, 164, 96, 100);
+    for (Shape barreira : barreiras) {
+      barreira.display();
+    }
+  }
+
   void drawSimplified() {
     // clay color stroke rgb: 244, 164, 96
     // teal
@@ -158,7 +174,6 @@ class Map {
 
   void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance, int maxConnections) {
 		boolean excludent = lines1 != lines2;
-		println("excludent", excludent);
     for (int i = 0; i < lines1.size(); i++) {
       Line line1 = lines1.get(i);
       Line line2;
@@ -273,7 +288,6 @@ class Map {
     String[] s_coordinates = coordinates.getContent().split(" ");
     PVector[] coords = new PVector[s_coordinates.length];
     for (int i = 0; i < s_coordinates.length; i++) {
-			println("s_coordinates[i]", s_coordinates[i] ,i);
       float lat = Float.parseFloat(s_coordinates[i].split(",")[0]);
       float lng = Float.parseFloat(s_coordinates[i].split(",")[1]);
       PVector location = new PVector(lat, lng);
@@ -306,5 +320,6 @@ class Map {
 		drawSimplified();
 		drawRios();
 		drawEscritas();
+		drawBarreiras();
 	}
 }

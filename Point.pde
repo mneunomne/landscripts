@@ -30,24 +30,23 @@ class Point {
   }
 
   void display() {
-		pg.pushStyle();
-    if (hasIntersection) {
+    if (hasIntersection && SHOW_INTERSECTIONS) {
+			pg.pushStyle();
       // draw cross
       pg.stroke(255);
-			for (Intersection intersection : intersections) {
-				Line l1 = intersection.l1;
-				Line l2 = intersection.l2;
-				if (l1 == parentLine) {
-					// draw from position to position
-					pg.stroke(0, 255, 0);
-					pg.line(intersection.p1.pos.x, intersection.p1.pos.y, intersection.p2.pos.x, intersection.p2.pos.y);
+			if (SHOW_INTERSECTIONS) {
+				for (Intersection intersection : intersections) {
+					Line l1 = intersection.l1;
+					Line l2 = intersection.l2;
+					if (l1 == parentLine) {
+						// draw from position to position
+						pg.stroke(0, 255, 0);
+						pg.line(intersection.p1.pos.x, intersection.p1.pos.y, intersection.p2.pos.x, intersection.p2.pos.y);
+					}
 				}
 			}
-      //line(pos.x - 5, pos.y - 5, pos.x + 5, pos.y + 5);
-      //line(pos.x + 5, pos.y - 5, pos.x - 5, pos.y + 5);
+   		pg.popStyle();
     }
-    // ellipse(pos.x, pos.y, 3, 3);
-		pg.popStyle();
   }
 
   void addIntersection(Intersection intersection) {

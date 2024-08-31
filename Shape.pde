@@ -1,16 +1,15 @@
 class Shape {
-  
   ArrayList<PVector> coords;
-
-  Shape(ArrayList<PVector> _coords) {
-    this.coords = coords;
+  
+	Shape(ArrayList<PVector> _coords) {
+    this.coords = _coords;
   }
-
-  void display () {
-    beginShape();
+  
+	void display () {
+    pg.beginShape();
     for (PVector coord : coords) {
-      vertex(coord.x, coord.y);
+      pg.vertex(coord.x, coord.y);
     }
-    endShape();
+    pg.endShape();
   }
 }

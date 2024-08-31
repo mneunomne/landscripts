@@ -9,16 +9,30 @@
 		body {
 			margin: 0;
 			overflow: hidden;
+			position: relative;
 		}
 
 		#canvas {
 			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		#svg-container {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
 		}
 	</style>
 </head>
 
 <body>
 	<canvas id="canvas"></canvas>
+	<div id="svg-container"></div>
 	<script>
 		const imgWidth = 5083;
 		const imgHeight = 5090;
@@ -30,20 +44,32 @@
 		canvas.height = window.innerHeight;
 
 		const img = new Image();
-		img.src = './image.jpg'; // Provide the path to your large image
+		img.src = 'image.jpg'; // Provide the path to your large image
 
 		const points = []; // Array to store all the received points
 
-		let zoomLevel = 0.8; // Set to 50% zoom
+		let zoomLevel = 0.5; // Set to 50% zoom
 		let cameraX = imgWidth / 2; // Initial camera position (center of the image)
 		let cameraY = imgHeight / 2;
 
 		const easing = 0.05; // Easing factor for smooth movement
 
-		img.onload = function () {
-			// When the image loads, draw it initially
-			drawScene(); // Initial draw
-		};
+		// Load SVG file
+		fetch('./barreiras.svg') // Provide the path to your SVG file
+			.then(response => response.text())
+			.then(svgText => {
+				const svgContainer = document.getElementById('svg-container');
+				svgContainer.innerHTML = svgText;
+				const svgElement = svgContainer.querySelector('svg');
+				svgElement.style.position = 'absolute';
+				svgElement.style.top = 0;
+				svgElement.style.left = 0;
+				svgElement.style.width = imgWidth + 'px';
+				svgElement.style.height = imgHeight + 'px';
+
+				// Initial draw after SVG is loaded
+				drawScene(svgElement);
+			});
 
 		// Connect to the WebSocket server
 		const socket = new WebSocket('ws://localhost:8080/');
@@ -63,7 +89,7 @@
 			points.push({ x: mappedX, y: mappedY });
 		}
 
-		function drawScene() {
+		function drawScene(svgElement) {
 			// Calculate zoomed image dimensions
 			const zoomedWidth = imgWidth * zoomLevel;
 			const zoomedHeight = imgHeight * zoomLevel;
@@ -108,10 +134,14 @@
 				}
 
 				ctx.stroke();
+
+				// Update the SVG overlay position and scale to match the camera movement and zoom
+				const svgTransform = `translate(${offsetX-1000}px, ${offsetY-1750}px) scale(${zoomLevel})`;
+				svgElement.style.transform = svgTransform;
 			}
 
 			// Request animation frame for smooth drawing
-			requestAnimationFrame(drawScene);
+			requestAnimationFrame(() => drawScene(svgElement));
 		}
 
 		// Mapping function
@@ -123,9 +153,6 @@
 		function lerp(start, end, t) {
 			return start + (end - start) * t;
 		}
-
-		// Start the initial draw
-		drawScene();
 	</script>
 </body>
 

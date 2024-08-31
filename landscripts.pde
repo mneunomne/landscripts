@@ -21,22 +21,23 @@ ControlP5 cp5;
 MachineController machineController;
 
 /* constants */
-static final int WAITTIME_DEFAULT   = 2000;
-static final int MICRODELAY_DEFAULT = 100;
-static final int CANVAS_MARGIN      = 0;
-static final int CANVAS_WIDTH				= 1000;
-static final int CANVAS_HEIGHT      = 1000;
-static final int IMAGE_RESOLUTION   = 5000;
-static final int CSV_RESOLUTION		  = 1000;
+static final int WAITTIME_DEFAULT   		= 2000;
+static final int MICRODELAY_DEFAULT 		= 100;
+static final int CANVAS_MARGIN      		= 0;
+static final int CANVAS_WIDTH						= 1000;
+static final int CANVAS_HEIGHT      		= 1000;
+static final int IMAGE_RESOLUTION   		= 5000;
+static final int CSV_RESOLUTION		  		= 1000;
 
-static final boolean EXPORT_SVG     = false;
-static final boolean EXPORT_OMS     = false;
-static final boolean SAVE_FRAME     = false;
-static final boolean NO_MACHINE 		= true;
-static final boolean NO_INTERFACE 	= true;
-static final boolean SHOW_IMAGE 		= false;
-static final boolean DEBUG 					= false;
-static final boolean SOCKET_ENABLED = true;
+static final boolean EXPORT_SVG     		= false;
+static final boolean EXPORT_OMS     		= true;
+static final boolean SAVE_FRAME     		= false;
+static final boolean NO_MACHINE 				= true;
+static final boolean NO_INTERFACE 			= true;
+static final boolean SHOW_IMAGE 				= false;
+static final boolean DEBUG 							= false;
+static final boolean SOCKET_ENABLED 		= true;
+static final boolean SHOW_INTERSECTIONS = false;
 
 /* states */
 static final int IDLE               = 0;
@@ -96,7 +97,7 @@ void setup() {
   
   machineController = new MachineController(this, NO_MACHINE);
   
-  map = new Map("kml/rios.kml", "kml/simplified.kml", "kml/escritas.kml");
+  map = new Map("kml/rios.kml", "kml/simplified.kml", "kml/escritas.kml", "kml/barreiras.kml");
   map.calculate();
   
   traveller = new Traveller(pathFiles);
@@ -109,12 +110,25 @@ void setup() {
     noLoop();
     // export svg 
     beginRecord(SVG, "data/rios.svg");
-      background(0);
+			pg.beginDraw();
+      pg.background(0);
       map.drawRios();
+			pg.endDraw();
+			image(pg, 0, 0, width, height);
     endRecord();
     beginRecord(SVG, "data/barreiras.svg");
-      background(0);
-      map.drawSimplified();
+			pg.beginDraw();
+      pg.background(0);
+      map.drawBarreiras();
+			pg.endDraw();
+			image(pg, 0, 0, width, height);
+    endRecord();
+    beginRecord(SVG, "data/escritas.svg");
+			pg.beginDraw();
+			pg.background(0);
+			map.drawEscritas();
+			pg.endDraw();
+			image(pg, 0, 0, width, height);
     endRecord();
   }
 
