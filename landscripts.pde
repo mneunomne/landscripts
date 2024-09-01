@@ -22,17 +22,17 @@ MachineController machineController;
 
 /* constants */
 static final int WAITTIME_DEFAULT   		= 2000;
-static final int MICRODELAY_DEFAULT 		= 100;
-static final int CANVAS_MARGIN      		= 0;
+static final int MICRODELAY_DEFAULT 		= 200;
+static final int CANVAS_MARGIN      		= 20;
 static final int CANVAS_WIDTH						= 1000;
 static final int CANVAS_HEIGHT      		= 1000;
 static final int IMAGE_RESOLUTION   		= 5000;
 static final int CSV_RESOLUTION		  		= 1000;
 
 static final boolean EXPORT_SVG     		= false;
-static final boolean EXPORT_OMS     		= true;
+static final boolean EXPORT_OMS     		= false;
 static final boolean SAVE_FRAME     		= false;
-static final boolean NO_MACHINE 				= true;
+static final boolean NO_MACHINE 				= false;
 static final boolean NO_INTERFACE 			= true;
 static final boolean SHOW_IMAGE 				= false;
 static final boolean DEBUG 							= false;
@@ -82,7 +82,7 @@ PVector translatePos = new PVector(0, 0);
 
 WebsocketServer server;
 
-String[] pathFiles = {"data/paths/rios.csv", "data/paths/simplified.csv"};
+String[] pathFiles = {"data/paths/simplified.csv", "data/paths/rios.csv"};
 
 void setup() {  
   //name of sketch

@@ -331,7 +331,7 @@ class Map {
 	void display() {
 		drawSimplified();
 		drawRios();
-		drawEscritas();
-		drawBarreiras();
+		//drawEscritas();
+		//drawBarreiras();
 	}
 }
