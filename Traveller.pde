@@ -40,6 +40,11 @@ class Traveller {
     }
     
     curPos = currentPath.get(curIndex);
+
+
+		// map to avoid values beyond CANVAS_MARGIN
+		curPos.x = constrain(curPos.x, CANVAS_MARGIN, CANVAS_WIDTH - CANVAS_MARGIN);
+		curPos.y = constrain(curPos.y, CANVAS_MARGIN, CANVAS_HEIGHT - CANVAS_MARGIN);
     
     // Check distance to the first point of the next path
     int nextPathIndex = (curPathIndex + 1) % paths.size();

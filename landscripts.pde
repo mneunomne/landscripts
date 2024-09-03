@@ -23,7 +23,7 @@ MachineController machineController;
 /* constants */
 static final int WAITTIME_DEFAULT   		= 2000;
 static final int MICRODELAY_DEFAULT 		= 200;
-static final int CANVAS_MARGIN      		= 20;
+static final int CANVAS_MARGIN      		= 30;
 static final int CANVAS_WIDTH						= 1000;
 static final int CANVAS_HEIGHT      		= 1000;
 static final int IMAGE_RESOLUTION   		= 5000;
