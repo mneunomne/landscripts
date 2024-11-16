@@ -1,7 +1,7 @@
 class MachineController {
   
   Serial port;  // Create object from Serial class
-  int portIndex = 0;
+  int portIndex = 5;
   
   PVector currentPos = new PVector(0, 0);
   

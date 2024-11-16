@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Landscripts</title>
+    <meta name="description" content="Landscripts">
+    <meta name="author" content="alberto harres">
+
+    <!-- aframe stuff -->
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-html-shader@0.2.0/dist/aframe-html-shader.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-orbit-controls@1.2.0/dist/aframe-orbit-controls.js"></script> 
+    <script src="https://gftruj.github.io/webzamples/aframe/collada/dist/collada-model.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="./js/movement-restrictor.js"></script>
+
+    <script src="./js/script.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;400&family=Xanh+Mono&display=swap" rel="stylesheet">
+    <script src="./js/script.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+  </head>
+  <body>
+    <div id="text-wrapper" style=" position: fixed; left: 10px; top: 10px; z-index: 1; overflow: hidden">Landscripts</div>
+    <a-scene  reflection="spotLight: a-light#dirlight;" vr-mode-ui="enabled: false" id="scene" simulation background="color: #ECECEC" light="defaultLightsEnabled: false" >
+      
+      <a-light id="dirlight" intensity="0.2" light="intensity: 0.62; castShadow: true; type: spot; angle: 30; penumbra: 1; color: #fff6e5; decay: 4.52; shadowBias: 1.91" position="0 3.16004 -0.95581" visible="" rotation="-103.91 0 0"></a-light>      
+
+      <a-entity id="camera" camera orbit-controls="target: 0 1.6 0; initialPosition: 0.386 4.978 7.685; enablePan: false; autoRotate: true; autoRotateSpeed: 0.055; maxDistance: 15; zoomSpeed: 3; maxPolarAngle: 90;"></a-entity> <!-- wasd-controls="acceleration:50; fly: true;" -->
+      <a-assets timeout="10000">
+        <img  id="concrete" src="images/concrete.jpg"></img>
+        <img  id="installation" src="images/installation.jpg"></img>
+        <img  id="wall1" src="images/wall1.png"></img>
+        <img  id="wall2" src="images/wall2.png"></img>
+        <img  id="wall3" src="images/wall3.png"></img>
+        <video autoplay width="800" height="800" id="video" loop="true" src="videos/mapa.mov"></video>
+
+      </a-assets>
+            
+      <a-sky color="#000000"></a-sky>
+
+      <!--
+        <a-plane width="9" height="9" rotation="90 0 0" material="side: double; color: #1a1a1a"></a-plane>
+      -->
+      <a-plane shadow="receive: true;" material="src:#concrete; repeat: 5 8" width="20" height="35" rotation="-90 0 0" ></a-plane>
+
+      <!-- room -->
+      <a-entity id="room" room="w: 16; h: 20; z: 35;">
+
+      <a-box position="0 .2 0" depth="1.3" width="1.3" height="0.40" material="color: #ffffff; roughness: 0.25; metalness: 0.75;"></a-box>
+      <a-plane position="0 0.41 0" material="src:#installation;" width="1.3" height="1.3" rotation="-90 0 0" ></a-plane>
+
+      
+
+      <a-entity position="0 1.5 0">
+        <a-box shadow="cast: true; receive: false;" position="6 0 0" rotation="0 90 0" depth="0.1" width="3" height="3"  material="color: #ffffff;">
+         <a-plane position="0 0.0 -0.07" material="src:#wall2; side: double;" width="3" height="3" rotation="0 0 0" ></a-plane>
+         <a-light id="dirlight-1" intensity="0.2" light="intensity: 0.59; castShadow: true; type: spot; angle: 10.75; penumbra: 1; color: #fff6e5" position="0 3.74797 -7.12985" visible="" rotation="-153.37 0 0"></a-light>        </a-box>
+        
+        <a-box shadow="cast: true; receive: false;" position="-6 0 0" rotation="0 -90 0" depth="0.1" width="3" height="3" material="color: #ffffff">
+          <a-plane position="0 0.0 -0.07" material="src:#wall3; side: double;" width="3" height="3" rotation="0 0 0" ></a-plane>
+          <a-light id="dirlight-1" intensity="0.2" light="intensity: 0.59; castShadow: true; type: spot; angle: 10.75; penumbra: 1; color: #fff6e5" position="0 3.74797 -7.12985" visible="" rotation="-153.37 0 0"></a-light>    
+        </a-box >
+
+        <a-box position="0 0 6" rotation="0 0 0" depth="0.1" width="3" height="3" material="color: #ffffff">
+          <a-plane position="0 0.0 -0.07" material="color: #ffffff side: double;" width="3" height="3" rotation="0 0 0" >
+            <a-video width="3" height="3" position="0 0 -0.01" src="#video" loop="true"></a-video>
+
+          </a-plane>
+        </a-box>
+
+      </a-entity>
+      </a-entity>
+      <a-entity light="color: #BBB; type: ambient; decay: 0.92; intensity: 0.3" data-aframe-default-light="" aframe-injected="" visible=""></a-entity>
+    </a-scene>
+    
+  </body>
+</html>
