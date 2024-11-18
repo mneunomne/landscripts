@@ -39,6 +39,8 @@
         <img  id="wall1" src="images/wall1.png"></img>
         <img  id="wall2" src="images/wall2.png"></img>
         <img  id="wall3" src="images/wall3.png"></img>
+        <a-asset-item id="tree-obj" src="./3d/floodlines v2.0 v36.obj"></a-asset-item>
+        <a-asset-item id="tree-mtl" src="./3d/floodlines v2.0 v36.mtl"></a-asset-item>
         <video autoplay width="800" height="800" id="video" loop="true" src="videos/mapa.mov"></video>
 
       </a-assets>
@@ -52,9 +54,11 @@
 
       <!-- room -->
       <a-entity id="room" room="w: 16; h: 20; z: 35;">
-
-      <a-box position="0 .2 0" depth="1.3" width="1.3" height="0.40" material="color: #ffffff; roughness: 0.25; metalness: 0.75;"></a-box>
-      <a-plane position="0 0.41 0" material="src:#installation;" width="1.3" height="1.3" rotation="-90 0 0" ></a-plane>
+      
+      <a-entity position="-0.493 0.049 0.358" scale="0.01 0.01 0.01" rotation="-90 0 0" obj-model="obj: ./3d/floodlines v2.0 v36.obj; mtl: ./3d/floodlines v2.0 v36.mtl"></a-entity>
+      <!--
+        <a-box position="0 .2 0" depth="1.3" width="1.3" height="0.40" material="color: #ffffff; roughness: 0.25; metalness: 0.75;"></a-box>
+        -->
 
       
 
