@@ -9,7 +9,7 @@ class MachineController {
   
   PGraphics machineCanvas;
   
-  boolean noMachine = true;
+  boolean noMachine = false;
   
   int microdelay = MICRODELAY_DEFAULT;
   
@@ -131,30 +131,30 @@ class MachineController {
     machineController.move(0, -CANVAS_HEIGHT); // up
   }
   
-  void move(int x, int y) {
+  void move(float x, float y) {
     if (noMachine) return;
     // move to a point
     sendMovement(x, y, 1, microdelay, 0);
   }
   
-  void moveTo(int x, int y) {
+  void moveTo(float x, float y) {
     machine_state = MOVING_TO;
     nextPos = new PVector(x, y);
     println("MOVE TO: " + x + " " + currentPos.x + " " + y + " " + currentPos.y);
-    int diff_x = int(x - currentPos.x);
-    int diff_y = int(y - currentPos.y);
+    float diff_x = x - currentPos.x;
+    float diff_y = y - currentPos.y;
     // invert x 
     diff_x = -diff_x;
     // send movement data
     sendMovement(diff_x, diff_y, 1, microdelay, 0);
   }
   
-  boolean sendLine(int x, int y) {
+  boolean sendLine(float x, float y) {
     machine_state = DRAWING;
     nextPos = new PVector(x, y);
     // println("pos: " + x + " " + currentPos.x + " " + y + " " + currentPos.y);
-    int diff_x = int(x - currentPos.x);
-    int diff_y = int(y - currentPos.y);
+    float diff_x = x - currentPos.x;
+    float diff_y = y - currentPos.y;
     if (diff_x == 0 && diff_y == 0) {
       return false;
     }
@@ -168,10 +168,12 @@ class MachineController {
     return true;
   }
   
-  void sendMovement(int x, int y, int type, int microdelay, int point_index) {
+  void sendMovement(float x, float y, int type, int microdelay, int point_index) {
     if (noMachine) return;
     // encode movement
     // String message = "[" + x + "," + y + "]";
+    x = x * steps_per_pixel;
+    y = y * steps_per_pixel;
     String message = "G" + type +  " X" + x + " Y" + y + " F" + microdelay +  " I" + point_index + '\n';
     port.write(message);
     println("[MachineController] Sent: " + message);

@@ -40,6 +40,8 @@ class Point {
 					Line l2 = intersection.l2;
 					if (l1 == parentLine) {
 						// draw from position to position
+            pg.ellipse(intersection.p1.pos.x, intersection.p1.pos.y, 5, 5);
+            pg.ellipse(intersection.p2.pos.x, intersection.p2.pos.y, 5, 5);
 						pg.stroke(0, 255, 0);
 						pg.line(intersection.p1.pos.x, intersection.p1.pos.y, intersection.p2.pos.x, intersection.p2.pos.y);
 					}

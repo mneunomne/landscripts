@@ -74,7 +74,7 @@ class Line {
 			pg.strokeWeight(scale);
 			for (Point point : points) {
 				pg.vertex(point.x, point.y);
-				if (point.hasIntersection) {
+				if (point.hasIntersection) {  
 					point.display();
 				}
 			}

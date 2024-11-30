@@ -8,10 +8,11 @@ class Map {
 	ArrayList<Line> all_lines = new ArrayList<Line>();
   ArrayList<Line> simplified = new ArrayList<Line>();
   ArrayList<Line> rios = new ArrayList<Line>();
+  ArrayList<Line> rios_barreiras = new ArrayList<Line>();
 	ArrayList<Line> escritas = new ArrayList<Line>();
 
 	// shapes
-	ArrayList<Shape> barreiras = new ArrayList<Shape>();
+	ArrayList<Line> barreiras = new ArrayList<Line>();
 
   ArrayList<Intersection> rios_intersections = new ArrayList<Intersection>();
 	ArrayList<Intersection> escritas_intersections = new ArrayList<Intersection>();
@@ -34,7 +35,7 @@ class Map {
 		parseShapes(barreiras_filename, barreiras_latlng);
 
 		// parse simplified
-		parseLines(simplified_filename, simplified_latlng);
+		// parseLines(simplified_filename, simplified_latlng);
     
     ArrayList<PVector[]> all_coords = new ArrayList<PVector[]>();
     all_coords.addAll(simplified_latlng);
@@ -74,18 +75,21 @@ class Map {
 	}
 
   void calculate() {
-    calculateLines(simplified_latlng, simplified);
+    //calculateLines(simplified_latlng, simplified);
     calculateLines(rios_latlng, rios);
 		calculateLines(escritas_latlng, escritas);
-		calculateShapes(barreiras_latlng, barreiras);
-		//
-		all_lines.addAll(simplified);
-		all_lines.addAll(escritas);
+		calculateLines(barreiras_latlng, barreiras);
+
+    rios_barreiras.addAll(rios);
+    rios_barreiras.addAll(barreiras);
+
+		// all_lines.addAll(simplified);
+
 		// add all lines to calculate intersections
     calculateIntersections(rios, rios, 10*scale, 9999);
-		calculateIntersections(simplified, simplified , 10*scale, 10);
-		calculateIntersections(escritas, escritas, 30*scale, 1);
-		calculateIntersections(escritas, simplified, 100*scale, 1);
+		// calculateIntersections(simplified, simplified , 10*scale, 10);
+		calculateIntersections(rios, barreiras, 20*scale, 9999);
+		//calculateIntersections(escritas, simplified, 100*scale, 1);
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Shape> shapes) {
@@ -148,7 +152,7 @@ class Map {
     // clay color
 		pg.stroke(244, 164, 96);
 		pg.fill(244, 164, 96, 100);
-    for (Shape barreira : barreiras) {
+    for (Line barreira : barreiras) {
       barreira.display();
     }
   }
@@ -288,6 +292,9 @@ class Map {
     String[] s_coordinates = coordinates.getContent().split(" ");
     PVector[] coords = new PVector[s_coordinates.length];
     for (int i = 0; i < s_coordinates.length; i++) {
+      if (s_coordinates[i].split(",").length < 2) {
+        continue;
+      }
       float lat = Float.parseFloat(s_coordinates[i].split(",")[0]);
       float lng = Float.parseFloat(s_coordinates[i].split(",")[1]);
       PVector location = new PVector(lat, lng);
@@ -329,9 +336,9 @@ class Map {
 	}
 
 	void display() {
-		drawSimplified();
+		//drawSimplified();
 		drawRios();
 		//drawEscritas();
-		//drawBarreiras();
+		drawBarreiras();
 	}
 }

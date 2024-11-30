@@ -18,6 +18,9 @@ Map map;
 Gui gui;
 ControlP5 cp5;
 
+float smallStep = 1;
+float bigStep = 10;
+
 MachineController machineController;
 
 /* constants */
@@ -29,15 +32,17 @@ static final int CANVAS_HEIGHT      		= 1000;
 static final int IMAGE_RESOLUTION   		= 5000;
 static final int CSV_RESOLUTION		  		= 1000;
 
+int steps_per_pixel = 68;
+
 static final boolean EXPORT_SVG     		= false;
 static final boolean EXPORT_OMS     		= false;
 static final boolean SAVE_FRAME     		= false;
 static final boolean NO_MACHINE 				= false;
-static final boolean NO_INTERFACE 			= true;
+static final boolean NO_INTERFACE 			= false;
 static final boolean SHOW_IMAGE 				= false;
-static final boolean DEBUG 							= false;
+static final boolean DEBUG 							= true;
 static final boolean SOCKET_ENABLED 		= true;
-static final boolean SHOW_INTERSECTIONS = false;
+static final boolean SHOW_INTERSECTIONS = true;
 
 /* states */
 static final int IDLE              		 	= 0;
@@ -135,6 +140,7 @@ void setup() {
   if (EXPORT_OMS) {
     exportData("rios");
 		exportData("rios_escritas");
+    exportData("rios_barreiras");
 		exportData("simplified");
   }
 }
@@ -148,9 +154,6 @@ void draw() {
 	traveller.display();
 	machineController.display();
 	pg.endDraw();
-
-	if (!NO_INTERFACE) {
-	}
 
 	// display fps
 	image(pg, 0, 0, width, height);
@@ -190,47 +193,73 @@ void goToLine () {
 	println("goToLine");
   Line l = map.rios.get(0);
   Point p = l.getPoint(0);
-  machineController.moveTo(p.x, p.y);
+  machineController.moveTo(float(p.x), float(p.y));
 }
 
 void keyPressed() {
   // move machine WASD
   if (key == 'w') {
-    machineController.move(0, -1); // up
-    machineController.currentPos.y -= 1;
+    machineController.move(0, -smallStep); // up
+    machineController.currentPos.y -= smallStep;
   }
   if (key == 's') {
-    machineController.move(0, 1); // down
-    machineController.currentPos.y += 1;
+    machineController.move(0, smallStep); // down
+    machineController.currentPos.y += smallStep;
   }
   if (key == 'a') {
-    machineController.move(1, 0); // left
-    machineController.currentPos.x -= 1;
+    machineController.move(smallStep, 0); // left
+    machineController.currentPos.x -= smallStep;
   }
   if (key == 'd') {
-    machineController.move( - 1, 0); // right
-    machineController.currentPos.x += 1;
+    machineController.move( - smallStep, 0); // right
+    machineController.currentPos.x += smallStep;
   }
   
   // with uppercase - bigger movement
   if (machine_state != MOVING_TO) {
     if (key == 'W') {
-      machineController.move(0, -10); // up
-      machineController.currentPos.y -= 10;
+      machineController.move(0, -bigStep); // up
+      machineController.currentPos.y -= bigStep;
     }
     if (key == 'S') {
-      machineController.move(0, 10); // down
-      machineController.currentPos.y += 10;
+      machineController.move(0, bigStep); // down
+      machineController.currentPos.y += bigStep;
     }
     if (key == 'A') {
-      machineController.move(10, 0); // left
-      machineController.currentPos.x -= 10;
+      machineController.move(bigStep, 0); // left
+      machineController.currentPos.x -= bigStep;
     }
     if (key == 'D') {
-      machineController.move( - 10, 0); // right
-      machineController.currentPos.x += 10;
+      machineController.move( - bigStep, 0); // right
+      machineController.currentPos.x += bigStep;
     }
   }
+}
+
+// export data as .osm
+void exportData (String type) {
+  //OSMWriter osmWritter = new OSMWriter(map.all_lines); 
+  //osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+
+	if (type == "rios") {
+		OSMWriter osmWritter = new OSMWriter(map.rios); 
+		osmWritter.export("data/osm/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
+
+  if (type == "rios_barreiras") {
+		OSMWriter osmWritter = new OSMWriter(map.rios_barreiras); 
+		osmWritter.export("data/osm/rios_barreiras.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
+
+	if (type == "rios_escritas") {
+		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
+		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
+
+	if (type == "simplified") {
+		OSMWriter osmWritter = new OSMWriter(map.simplified); 
+		osmWritter.export("data/osm/simplified.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+	}
 }
 
 /* GUI BUTTON EVENTS */
@@ -245,23 +274,10 @@ void set_send_lines(int val) {
 	}
 }
 
-// export data as .osm
-void exportData (String type) {
-  //OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-  //osmWritter.export("data/all_lines.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+void small_step (int value) {
+  smallStep = value; 
+}
 
-	if (type == "rios") {
-		OSMWriter osmWritter = new OSMWriter(map.rios); 
-		osmWritter.export("data/osm/rios.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
-	}
-
-	if (type == "rios_escritas") {
-		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
-	}
-
-	if (type == "simplified") {
-		OSMWriter osmWritter = new OSMWriter(map.simplified); 
-		osmWritter.export("data/osm/simplified.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
-	}
+void big_step (int value) {
+  bigStep = value;
 }

@@ -24,7 +24,6 @@ GCodeParser GCode = GCodeParser();
 int minDelay = 2;
 int maxDelayDefault = 200;
 
-
 boolean reachedXLimit = false;
 boolean reachedYLimit = false;
 
@@ -36,8 +35,6 @@ char buffer[14];
 
 long curX = 0L;
 long curY = 0L;
-
-int steps_per_pixel = 68; 
 
 void setup() {
   Serial.begin(115200);
@@ -178,8 +175,8 @@ void move(long diffX, long diffY, int maxDelay) {
   int dirY = (diffY > 0) ? 1 : -1;
 
   // Calculate the total steps for each axis
-  long totalStepsX = labs(diffX * steps_per_pixel);
-  long totalStepsY = labs(diffY * steps_per_pixel);
+  long totalStepsX = labs(diffX);
+  long totalStepsY = labs(diffY);
 
   Serial.print("totalStepsX: ");
   Serial.print(String(totalStepsX));
