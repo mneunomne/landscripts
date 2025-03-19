@@ -2,3 +2,4 @@ data/frames/*.png
 *.mp4
 *.mkv
 api-key.txt
+*.DS_Store
