@@ -83,13 +83,17 @@ class Map {
     rios_barreiras.addAll(rios);
     rios_barreiras.addAll(barreiras);
 
-		// all_lines.addAll(simplified);
-
 		// add all lines to calculate intersections
     calculateIntersections(rios, rios, 10*scale, 9999);
 		// calculateIntersections(simplified, simplified , 10*scale, 10);
 		calculateIntersections(rios, barreiras, 20*scale, 9999);
-		//calculateIntersections(escritas, simplified, 100*scale, 1);
+		calculateIntersections(escritas, escritas, 20*scale, 9999);
+    calculateIntersections(escritas, rios, 60*scale, 9999);
+
+    all_lines.addAll(rios);
+    all_lines.addAll(escritas);
+    all_lines.addAll(barreiras);
+
 	}
 
   void calculateShapes(ArrayList<PVector[]> shapes_latlng, ArrayList<Shape> shapes) {
@@ -217,7 +221,7 @@ class Map {
 						}
 					}
 					if (connections >= maxConnections) {
-						//hasIntersection = true;
+						hasIntersection = true;
 					}
 
           if (!hasIntersection) {
@@ -338,7 +342,7 @@ class Map {
 	void display() {
 		//drawSimplified();
 		drawRios();
-		//drawEscritas();
+		drawEscritas();
 		drawBarreiras();
 	}
 }

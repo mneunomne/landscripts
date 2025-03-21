@@ -172,9 +172,9 @@ class MachineController {
     if (noMachine) return;
     // encode movement
     // String message = "[" + x + "," + y + "]";
-    x = x * steps_per_pixel;
-    y = y * steps_per_pixel;
-    String message = "G" + type +  " X" + x + " Y" + y + " F" + microdelay +  " I" + point_index + '\n';
+    int _x = int(x * steps_per_pixel);
+    int _y = int(y * steps_per_pixel);
+    String message = "G" + type +  " X" + _x + " Y" + _y + " F" + microdelay +  " I" + point_index + '\n';
     port.write(message);
     println("[MachineController] Sent: " + message);
   }

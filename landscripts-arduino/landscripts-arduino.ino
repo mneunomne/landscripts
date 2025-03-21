@@ -111,7 +111,7 @@ void listenToPort() {
           int out = sprintf(buffer, "end_%d", index);
           move(posX, posY, microdelay);
           // repond to the sender the current position
-          Serial.println(buffer);
+          // Serial.println(buffer);
         }
       }
     }

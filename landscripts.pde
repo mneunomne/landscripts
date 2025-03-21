@@ -2,6 +2,8 @@
 *  ......Landscripts......
 *  .....by @mneunomne.....
 *  ..........2024.........
+*  run this sketch on command line with:
+*  processing-java --sketch=/path/to/landscripts --run
 */ 
 
 /* imports */
@@ -35,9 +37,9 @@ static final int CSV_RESOLUTION		  		= 1000;
 int steps_per_pixel = 68;
 
 static final boolean EXPORT_SVG     		= false;
-static final boolean EXPORT_OMS     		= false;
+static final boolean EXPORT_OMS     		= true;
 static final boolean SAVE_FRAME     		= false;
-static final boolean NO_MACHINE 				= false;
+static final boolean NO_MACHINE 				= true;
 static final boolean NO_INTERFACE 			= false;
 static final boolean SHOW_IMAGE 				= false;
 static final boolean DEBUG 							= true;
@@ -78,9 +80,7 @@ PImage bg;
 PGraphics pg;
 
 float scale = CANVAS_WIDTH / 800;
-
 float img_scale = IMAGE_RESOLUTION / 800;
-
 float csv_scale = CSV_RESOLUTION / 800;
 
 PVector translatePos = new PVector(0, 0);
@@ -138,10 +138,10 @@ void setup() {
   }
 
   if (EXPORT_OMS) {
-    exportData("rios");
-		exportData("rios_escritas");
-    exportData("rios_barreiras");
-		exportData("simplified");
+    //exportData("rios");
+		//exportData("rios_escritas");
+		//exportData("simplified");
+    exportData("rios_barreiras_escritas");
   }
 }
 
@@ -251,9 +251,9 @@ void exportData (String type) {
 		osmWritter.export("data/osm/rios_barreiras.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 	}
 
-	if (type == "rios_escritas") {
+	if (type == "rios_barreiras_escritas") {
 		OSMWriter osmWritter = new OSMWriter(map.all_lines); 
-		osmWritter.export("data/osm/simplified_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
+		osmWritter.export("data/osm/rios_barreiras_escritas.osm", map.minLat, map.minLng, map.maxLat, map.maxLng);
 	}
 
 	if (type == "simplified") {
