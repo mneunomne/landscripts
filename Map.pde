@@ -84,11 +84,11 @@ class Map {
     rios_barreiras.addAll(barreiras);
 
 		// add all lines to calculate intersections
-    calculateIntersections(rios, rios, 10*scale, 9999);
+    calculateIntersections(rios, rios, 10*scale, 2, 2);
 		// calculateIntersections(simplified, simplified , 10*scale, 10);
-		calculateIntersections(rios, barreiras, 20*scale, 9999);
-		calculateIntersections(escritas, escritas, 20*scale, 9999);
-    calculateIntersections(escritas, rios, 60*scale, 9999);
+		//calculateIntersections(rios, barreiras, 20*scale, 2, 2);
+		calculateIntersections(escritas, escritas, 20*scale, 2, 2);
+    //calculateIntersections(escritas, rios, 60*scale, 2, 2);
 
     all_lines.addAll(rios);
     all_lines.addAll(escritas);
@@ -180,84 +180,108 @@ class Map {
 		}
 	}
 
-  void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float _minDistance, int maxConnections) {
-		boolean excludent = lines1 != lines2;
+  void calculateIntersections(ArrayList<Line> lines1, ArrayList<Line> lines2, float minDistance, int maxConnections1, int maxConnections2) {
+    // Check if we're comparing the same set of lines to itself
+    boolean excludent = lines1 != lines2;
+    
     for (int i = 0; i < lines1.size(); i++) {
       Line line1 = lines1.get(i);
-      Line line2;
-			float minDistance = _minDistance;
+      
+      // Skip if this line already has maximum connections
+      if (maxConnections1 != Integer.MAX_VALUE) {
+        int connectionsCount1 = 0;
+        for (Intersection intersection : line1.intersections) {
+          if (lines2.contains(intersection.l2)) {
+            connectionsCount1++;
+          }
+        }
+        
+        if (connectionsCount1 >= maxConnections1) continue;
+      }
+      
       for (int j = 0; j < lines2.size(); j++) {
-        line2 = lines2.get(j);
-				if (line1.id == line2.id) continue;
-        Intersection closestIntersection = null;
+        Line line2 = lines2.get(j);
+        
+        // Skip self
+        if (line1.id == line2.id) continue;
+        
+        // Skip if line2 already has maximum connections
+        if (maxConnections2 != Integer.MAX_VALUE) {
+          int connectionsCount2 = 0;
+          for (Intersection intersection : line2.intersections) {
+            if (lines1.contains(intersection.l1)) {
+              connectionsCount2++;
+            }
+          }
+          
+          if (connectionsCount2 >= maxConnections2) continue;
+        }
+        
+        // Check if these lines already have an intersection
+        boolean alreadyConnected = false;
+        for (Intersection existingIntersection : line1.intersections) {
+          if (existingIntersection.l2 == line2) {
+            alreadyConnected = true;
+            break;
+          }
+        }
+        
+        if (alreadyConnected) continue;
+        
+        // For excluding indirect connections if needed
+        if (excludent) {
+          // Check for indirect connections
+          boolean hasIndirectConnection = false;
+          
+          // Check if line1 is connected to any other line that's connected to line2
+          for (Intersection intersection1 : line1.intersections) {
+            Line connectedLine = intersection1.l2;
+            
+            for (Intersection intersection2 : connectedLine.intersections) {
+              if (intersection2.l2 == line2) {
+                hasIndirectConnection = true;
+                break;
+              }
+            }
+            
+            if (hasIndirectConnection) break;
+          }
+          
+          if (hasIndirectConnection) continue;
+        }
+        
+        // Find closest points between the two lines
+        Point closestPoint1 = null;
+        Point closestPoint2 = null;
+        float closestDistance = Float.MAX_VALUE;
+        
+        // Iterate through all points in both lines to find closest pair
         for (int m = 0; m < line1.size(); m++) {
           Point point1 = line1.getPoint(m);
-          Point point2 = null;
-          for (int k = 0; k < line2.size() - 1; k++) {
-            point2 = line2.getPoint(k);
+          
+          for (int n = 0; n < line2.size(); n++) {
+            Point point2 = line2.getPoint(n);
+            
             float distance = PVector.dist(point1.pos, point2.pos);
-            if (distance < minDistance) {
-              minDistance = distance;
-              closestIntersection = new Intersection(point1, point2, line1, line2);
+            
+            // Update closest pair if this pair is closer
+            if (distance < closestDistance && distance < minDistance) {
+              closestDistance = distance;
+              closestPoint1 = point1;
+              closestPoint2 = point2;
             }
           }
         }
-        if (closestIntersection != null) {
-          Point p1 = closestIntersection.p1;
-          Point p2 = closestIntersection.p2;
-          Line l1 = closestIntersection.l1;
-          Line l2 = closestIntersection.l2;
-
-          // check if line l2 already has intersection with l1
-					boolean hasIntersection = false;
-					
-					// get connections that l1 with lines from lines2
-					int connections = 0;
-					for (Intersection intersection : l1.intersections) {
-						for (Line line : lines2) {
-							if (intersection.l2 == line) {
-								connections++;
-							}
-						}
-					}
-					if (connections >= maxConnections) {
-						hasIntersection = true;
-					}
-
-          if (!hasIntersection) {
-						for (Intersection intersection : l2.intersections) {
-							if (l2 == intersection.l1 && l1 == intersection.l2) {
-								hasIntersection = true;
-								break;
-							}
-						}
-					}
-					if (!hasIntersection && excludent) {
-						// check if current line already has intersection with any lines from lines2
-						for (Intersection intersection : l1.intersections) {
-							// find if any of the intersection.l2 can be found in lines2
-							for (Line line : lines2) {
-								if (intersection.l2 == line) {
-									hasIntersection = true;
-									break;
-								} else {
-									// also check for the intersecrtions of the intersection.l2, if they are connected to any lines2
-									for (Intersection intersection2 : intersection.l2.intersections) {
-										if (intersection2.l2 == line) {
-											hasIntersection = true;
-											break;
-										}
-									}
-								}
-							} 
-						}
-					}
-          if (!hasIntersection) {
-            p1.addIntersection(closestIntersection);
-            p2.addIntersection(closestIntersection);
-            l1.addIntersection(closestIntersection);
-            l2.addIntersection(closestIntersection);
-          }
+        
+        // Create intersection if valid points were found
+        if (closestPoint1 != null && closestPoint2 != null) {
+          Intersection newIntersection = new Intersection(closestPoint1, closestPoint2, line1, line2);
+          
+          // Add the intersection to both points and both lines
+          closestPoint1.addIntersection(newIntersection);
+          closestPoint2.addIntersection(newIntersection);
+          line1.addIntersection(newIntersection);
+          line2.addIntersection(newIntersection);
         }
       }
     }

@@ -58,6 +58,21 @@ class OSMWriter {
               XML tag = node.addChild("tag");
               tag.setString("k", "intersection");
               nodeMap.put(pos, id);
+            } else {
+              XML node = osm.getChildren("node")[nodeMap.get(pos).intValue() - 1];
+              // check if the node already has the intersection tag
+              boolean hasIntersectionTag = false;
+              for (XML child : node.getChildren("tag")) {
+                if (child.getString("k").equals("intersection")) {
+                  hasIntersectionTag = true;
+                  break;
+                }
+              }
+              if (!hasIntersectionTag) {
+                // add interssection tag
+                XML tag = node.addChild("tag");
+                tag.setString("k", "intersection");
+              }
             }
           }
         }

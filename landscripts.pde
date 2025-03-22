@@ -226,7 +226,7 @@ void keyPressed() {
       machineController.currentPos.y += bigStep;
     }
     if (key == 'A') {
-      machineController.move(bigStep, 0); // left
+      machineController.move(bigStep, 0); // left+-
       machineController.currentPos.x -= bigStep;
     }
     if (key == 'D') {
